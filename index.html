@@ -111,6 +111,72 @@ button.btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid v
   background:rgba(0,0,0,.45);color:var(--ink);border:1px solid var(--edge);border-radius:9px;padding:10px;
 }
 .note{margin-top:10px;font-size:13px;color:var(--live);font-family:'DM Mono',monospace;min-height:1.2em}
+.storeline{margin-top:8px;font-size:12.5px;color:var(--ink-soft);font-family:'DM Mono',monospace}
+
+/* alert bubble — floats just under the sticky header, overlaying the page */
+#alerts{
+  position:absolute;top:100%;left:0;right:0;
+  max-width:1080px;margin:0 auto;
+  padding:10px clamp(16px,3.5vw,40px) 0;
+  pointer-events:none;
+}
+#alerts:empty{display:none}
+.alert{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  border-radius:11px;padding:11px 11px 11px 16px;margin:0;
+  font-size:14.5px;line-height:1.45;
+  pointer-events:auto;
+  border:1px solid var(--edge);
+  background:linear-gradient(0deg,rgba(255,255,255,.045),rgba(255,255,255,.045)),var(--panel-2);
+  box-shadow:0 14px 32px -14px rgba(0,0,0,.95);
+}
+.alert .ab{flex:1;min-width:190px}
+.alert b{color:var(--ink)}
+.alert.nudge{
+  border-color:rgba(255,192,46,.55);
+  background:linear-gradient(165deg,rgba(255,192,46,.17),rgba(255,192,46,.06)),var(--panel-2);
+}
+.alert.nudge .ttl{color:var(--amber);font-weight:700}
+.alert .acts{display:flex;gap:8px;flex-wrap:wrap}
+.alert .x{
+  background:transparent;border:0;color:var(--ink-soft);font-size:20px;
+  line-height:1;cursor:pointer;padding:3px 8px;border-radius:6px;
+}
+.alert .x:hover{background:rgba(255,255,255,.08);color:var(--ink)}
+@media(max-width:600px){
+  .alert{font-size:14px;gap:9px}
+  .alert .ab{min-width:100%}
+}
+
+/* welcome modal */
+.ovl{
+  position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+  background:rgba(4,4,6,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);padding:20px;
+}
+.ovl[hidden]{display:none}
+.ovl .card{
+  max-width:520px;width:100%;border-radius:15px;padding:24px 26px;
+  border:1px solid var(--edge);background:linear-gradient(165deg,var(--panel-2),var(--panel));
+  box-shadow:0 26px 70px -20px rgba(0,0,0,.95);
+}
+.ovl h3{font-family:'Bungee',cursive;font-size:19px;margin:0 0 12px;color:var(--accent)}
+.ovl p{font-size:15px;line-height:1.5;color:var(--ink-soft);margin:0 0 14px}
+.ovl p b,.ovl li b{color:var(--ink)}
+ul.rules{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-direction:column;gap:11px}
+ul.rules li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.ic{
+  flex:none;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;
+  font-size:12px;font-weight:700;margin-top:1px;
+}
+.ic.warn{background:rgba(255,192,46,.18);color:var(--amber);border:1px solid rgba(255,192,46,.45)}
+.ic.ok{background:rgba(47,224,138,.15);color:var(--live);border:1px solid rgba(47,224,138,.4)}
+.askstat{
+  font-family:'DM Mono',monospace;font-size:14px;color:var(--ink);
+  background:rgba(255,255,255,.05);border:1px solid var(--edge);
+  border-radius:9px;padding:10px 13px;margin-bottom:16px;
+}
+.askstat b{color:var(--accent);font-weight:500}
+.askstat:empty{display:none}
 
 /* ---------- rarity sections ---------- */
 section.rar{
@@ -252,28 +318,55 @@ td.na{color:var(--ink-soft);opacity:.35;font-family:'Barlow Condensed',sans-seri
     </header>
     <div class="pbar"><i id="pfill"></i></div>
   </div>
+  <div id="alerts"></div>
 </div>
 
 <div class="wrap">
 
 <div class="chips" id="chips"></div>
 
-<details class="tools">
-  <summary>Backup, restore &amp; reset</summary>
-  <p>Progress lives in this browser's local storage. Download a backup file before clearing browser data or moving machines, then restore it here.</p>
+<details class="tools" id="toolsBox">
+  <summary>Backup &amp; restore</summary>
+  <p><b>Your progress is saved in this browser only.</b> The quickest way to protect it is the backup link below — it contains your whole collection, so you can send it to yourself and open it on any device.</p>
   <div class="cal">
-    <button class="btn" id="btnDownload">Download backup (.txt)</button>
+    <button class="btn" id="btnLink">Copy backup link</button>
+    <button class="btn ghost" id="btnDownload">Download backup file</button>
     <button class="btn ghost" id="btnFile">Restore from file</button>
+    <button class="btn ghost" id="btnIntro">Show intro again</button>
     <button class="btn ghost" id="btnReset">Reset everything</button>
   </div>
-  <textarea id="ioBox" placeholder="Or paste a backup here…"></textarea>
+  <textarea id="ioBox" placeholder="Paste a backup link or backup text here…"></textarea>
   <div class="cal"><button class="btn ghost" id="btnImport">Restore from pasted backup</button></div>
   <div class="note" id="ioNote"></div>
+  <div class="storeline" id="storeLine"></div>
   <input type="file" id="fileIn" accept=".txt,.json,text/plain" hidden>
 </details>
 
 <div id="sections"></div>
 
+</div>
+<div class="ovl" id="welcome" hidden>
+  <div class="card">
+    <h3>Before you start</h3>
+    <p>This tracker saves your progress <b>in this browser, on this device</b>.</p>
+    <ul class="rules">
+      <li><span class="ic warn">!</span><span>Clearing your browsing data or cookies will erase your progress.</span></li>
+      <li><span class="ic warn">!</span><span>Do not use a private or incognito window, or your progress will be lost when you leave this page.</span></li>
+      <li><span class="ic ok">✓</span><span>Use <b>Copy backup link</b> any time — that link restores your whole collection in any browser.</span></li>
+    </ul>
+    <div class="cal"><button class="btn" id="welcomeOk">Got it</button></div>
+  </div>
+</div>
+<div class="ovl" id="askBox" hidden>
+  <div class="card">
+    <h3 id="askTitle">Restore backup?</h3>
+    <p id="askBody"></p>
+    <div class="askstat" id="askStat"></div>
+    <div class="cal">
+      <button class="btn" id="askYes">Restore</button>
+      <button class="btn ghost" id="askNo">Cancel</button>
+    </div>
+  </div>
 </div>
 <script>
 /* ---------------- data ---------------- */
@@ -354,6 +447,58 @@ const TOTAL = STD.length*VARIANTS.length + (D.length-STD.length);  // 442
 
 /* ---------------- state ---------------- */
 const KEY='dtx:v1';
+const MKEY='dtx:meta';
+
+/* ---- backup-link encoding ----
+   One byte per droid: bits 0-6 = the 7 variants in VARIANTS order, bit 7 = Flawless.
+   SLOT_ORDER is FROZEN. New droids must be APPENDED to the end only — never
+   reordered or removed — so links made by older versions keep decoding correctly. */
+const SLOT_ORDER = D.map(d=>d.id);
+const B64='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+function encodeState(){
+  const bytes=new Uint8Array(SLOT_ORDER.length);
+  SLOT_ORDER.forEach((id,i)=>{
+    let b=0;
+    VARIANTS.forEach((v,vi)=>{ if(isOn(id,v.key)) b|=(1<<vi); });
+    if(state.f[id]) b|=128;
+    bytes[i]=b;
+  });
+  let out='',bits=0,acc=0;
+  for(const byte of bytes){
+    acc=(acc<<8)|byte; bits+=8;
+    while(bits>=6){ bits-=6; out+=B64[(acc>>bits)&63]; }
+  }
+  if(bits>0) out+=B64[(acc<<(6-bits))&63];
+  return 'b1.'+out;
+}
+function decodeState(str){
+  const m=String(str).match(/b1\.([A-Za-z0-9\-_]+)/);
+  if(!m) return null;
+  const s=m[1];
+  let bits=0,acc=0; const bytes=[];
+  for(const ch of s){
+    const v=B64.indexOf(ch);
+    if(v<0) return null;
+    acc=(acc<<6)|v; bits+=6;
+    if(bits>=8){ bits-=8; bytes.push((acc>>bits)&255); }
+  }
+  const c={},f={};
+  bytes.forEach((b,i)=>{
+    const id=SLOT_ORDER[i];
+    if(!id) return;                        /* link from a newer build: ignore extras */
+    VARIANTS.forEach((v,vi)=>{ if(b&(1<<vi)){ (c[id]=c[id]||{})[v.key]=1; } });
+    if(b&128) f[id]=1;
+  });
+  return {c,f};
+}
+function backupLink(){
+  return location.origin+location.pathname+'#'+encodeState();
+}
+
+/* ---- meta: visit count, changes since last backup, welcome seen ---- */
+let meta={seen:0,visits:0,changes:0};
+try{ const m=localStorage.getItem(MKEY); if(m) meta=Object.assign(meta,JSON.parse(m)||{}); }catch(e){}
+function saveMeta(){ try{ localStorage.setItem(MKEY, JSON.stringify(meta)); }catch(e){} }
 let state = {c:{}, f:{}};
 try{ const s=localStorage.getItem(KEY); if(s){ const p=JSON.parse(s); if(p&&typeof p==='object') state={c:p.c||{},f:p.f||{}}; } }catch(e){}
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
@@ -437,9 +582,9 @@ for(const v of VARIANTS){
 /* ---------------- interactions ---------------- */
 document.addEventListener('click',e=>{
   const c=e.target.closest('.cell');
-  if(c){ const on=!isOn(c.dataset.id,c.dataset.v); setOn(c.dataset.id,c.dataset.v,on); save(); paint(); return; }
+  if(c){ const on=!isOn(c.dataset.id,c.dataset.v); setOn(c.dataset.id,c.dataset.v,on); bumpChanges(1); save(); paint(); return; }
   const f=e.target.closest('.fcell');
-  if(f){ const id=f.dataset.id; if(state.f[id]) delete state.f[id]; else state.f[id]=1; save(); paint(); return; }
+  if(f){ const id=f.dataset.id; if(state.f[id]) delete state.f[id]; else state.f[id]=1; bumpChanges(1); save(); paint(); return; }
   const ft=e.target.closest('.fusetag');
   if(ft){
     const row=document.querySelector(`.fuseRow[data-for="${ft.dataset.id}"]`);
@@ -457,7 +602,7 @@ document.addEventListener('click',e=>{
       const all=ds.every(d=>isOn(d.id,v));
       for(const d of ds) setOn(d.id,v,!all);
     }
-    save(); paint();
+    bumpChanges(ds.length); save(); paint();
   }
 });
 
@@ -503,12 +648,83 @@ function paint(){
   }
 }
 
-/* ---------------- backup ---------------- */
+/* ---------------- backup, alerts & first-run ---------------- */
 const ioNote=document.getElementById('ioNote');
+const alerts=document.getElementById('alerts');
+const toolsBox=document.getElementById('toolsBox');
+
 function stamp(){
   const d=new Date(), p=n=>String(n).padStart(2,'0');
   return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
 }
+function markBackedUp(){ meta.changes=0; nudgeFloor=10; saveMeta(); renderAlerts(); }
+function bumpChanges(n){ meta.changes=(meta.changes||0)+n; saveMeta(); renderAlerts(); }
+function openTools(){ toolsBox.open=true; toolsBox.scrollIntoView({behavior:'smooth',block:'center'}); }
+
+/* ---- alert bars ---- */
+let nudgeFloor=10;
+function renderAlerts(){
+  alerts.innerHTML='';
+  /* re-arms: after dismissing, it returns once another 10 marks pile up */
+  if((meta.changes||0)>=nudgeFloor){
+    const el=document.createElement('div');
+    el.className='alert nudge';
+    el.innerHTML=`<div class="ab"><span class="ttl">You've marked ${meta.changes} things since your last backup.</span>
+      Grab a backup link so you don't lose it — it saves in seconds.</div>
+      <div class="acts"><button class="btn" data-act="link">Copy backup link</button></div>
+      <button class="x" data-act="close" aria-label="Dismiss">×</button>`;
+    alerts.appendChild(el);
+  }
+}
+alerts.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.act==='link'){ copyLink(); return; }
+  if(b.dataset.act==='close'){ nudgeFloor=(meta.changes||0)+10; renderAlerts(); }
+});
+
+/* in-page confirm — avoids the browser's native dialog, which looks like a scam popup */
+function ask(title,body,stat,okLabel){
+  return new Promise(res=>{
+    const box=document.getElementById('askBox');
+    document.getElementById('askTitle').textContent=title;
+    document.getElementById('askBody').textContent=body;
+    document.getElementById('askStat').innerHTML=stat||'';
+    const yes=document.getElementById('askYes'), no=document.getElementById('askNo');
+    yes.textContent=okLabel||'Confirm';
+    box.hidden=false;
+    const done=v=>{ box.hidden=true; yes.onclick=null; no.onclick=null; document.removeEventListener('keydown',key); res(v); };
+    const key=ev=>{ if(ev.key==='Escape') done(false); };
+    yes.onclick=()=>done(true);
+    no.onclick=()=>done(false);
+    document.addEventListener('keydown',key);
+  });
+}
+
+/* ---- copy backup link ---- */
+async function copyLink(){
+  const link=backupLink();
+  let ok=false;
+  try{ await navigator.clipboard.writeText(link); ok=true; }
+  catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=link; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ ok=document.execCommand('copy'); }catch(e2){}
+    ta.remove();
+  }
+  markBackedUp();
+  openTools();
+  if(ok){
+    ioNote.style.color='var(--live)';
+    ioNote.textContent='Backup link copied — paste it somewhere safe (a DM to yourself works well).';
+  }else{
+    document.getElementById('ioBox').value=link;
+    ioNote.style.color='var(--amber)';
+    ioNote.textContent='Copy blocked by the browser — the link is in the box below, copy it manually.';
+  }
+}
+document.getElementById('btnLink').addEventListener('click',copyLink);
+
 document.getElementById('btnDownload').addEventListener('click',()=>{
   const name=`droidex-backup-${stamp()}.txt`;
   const blob=new Blob([JSON.stringify(state)],{type:'text/plain'});
@@ -517,19 +733,37 @@ document.getElementById('btnDownload').addEventListener('click',()=>{
   a.href=url; a.download=name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
+  markBackedUp();
   ioNote.style.color='var(--live)'; ioNote.textContent=`Backup downloaded as ${name}`;
 });
-function tryRestore(raw){
-  try{
-    const p=JSON.parse(raw);
-    if(typeof p!=='object'||!p) throw 0;
-    if(!confirm('Replace current progress with this backup?')) return;
-    state={c:p.c||{},f:p.f||{}}; save();
-    paint();
-    let marks=0; for(const id in state.c) marks+=Object.keys(state.c[id]).length;
-    ioNote.style.color='var(--live)';
-    ioNote.textContent=`Backup restored — ${marks} collection marks, ${Object.keys(state.f).length} Flawless.`;
-  }catch(e){ ioNote.style.color='var(--amber)'; ioNote.textContent='That does not look like a valid backup.'; }
+
+/* accepts a backup link, a raw b1. code, or an old JSON/.txt backup */
+async function tryRestore(raw,quiet){
+  const txt=String(raw).trim();
+  let parsed=null;
+  if(/b1\./.test(txt)) parsed=decodeState(txt);
+  if(!parsed){
+    try{ const p=JSON.parse(txt); if(p&&typeof p==='object') parsed={c:p.c||{},f:p.f||{}}; }catch(e){}
+  }
+  if(!parsed){
+    ioNote.style.color='var(--amber)';
+    ioNote.textContent='That does not look like a valid backup link or backup file.';
+    openTools(); return false;
+  }
+  let marks=0; for(const id in parsed.c) marks+=Object.keys(parsed.c[id]).length;
+  const fl=Object.keys(parsed.f).length;
+  const ok=await ask(
+    'Restore this backup?',
+    "This will replace the progress currently saved in this browser.",
+    `Found <b>${marks}</b> collection marks and <b>${fl}</b> Flawless.`,
+    'Restore'
+  );
+  if(!ok) return false;
+  state=parsed; save(); markBackedUp(); paint();
+  ioNote.style.color='var(--live)';
+  ioNote.textContent=`Backup restored — ${marks} collection marks, ${fl} Flawless.`;
+  if(!quiet) openTools();
+  return true;
 }
 document.getElementById('btnFile').addEventListener('click',()=>document.getElementById('fileIn').click());
 document.getElementById('fileIn').addEventListener('change',e=>{
@@ -541,17 +775,64 @@ document.getElementById('fileIn').addEventListener('change',e=>{
 });
 document.getElementById('btnImport').addEventListener('click',()=>{
   const raw=document.getElementById('ioBox').value.trim();
-  if(!raw){ ioNote.style.color='var(--amber)'; ioNote.textContent='Paste a backup into the box first.'; return; }
+  if(!raw){ ioNote.style.color='var(--amber)'; ioNote.textContent='Paste a backup link or backup text into the box first.'; return; }
   tryRestore(raw);
 });
-document.getElementById('btnReset').addEventListener('click',()=>{
-  if(!confirm('Clear ALL collection progress and Flawless marks?')) return;
-  state={c:{},f:{}}; save();
-  paint();
+document.getElementById('btnReset').addEventListener('click',async()=>{
+  const ok=await ask(
+    'Clear everything?',
+    'This erases all collection marks and Flawless marks saved in this browser. It cannot be undone.',
+    '',
+    'Clear everything'
+  );
+  if(!ok) return;
+  state={c:{},f:{}}; save(); markBackedUp(); paint();
   ioNote.style.color='var(--ink-soft)'; ioNote.textContent='Everything cleared.';
 });
 
+/* ---- ask the browser to keep this data ---- */
+const storeLine=document.getElementById('storeLine');
+async function askPersist(){
+  if(!navigator.storage||!navigator.storage.persist){
+    storeLine.textContent='Storage: this browser gives no durability guarantee — back up regularly.';
+    return;
+  }
+  try{
+    let p=await navigator.storage.persisted();
+    if(!p) p=await navigator.storage.persist();
+    storeLine.textContent = p
+      ? 'Storage: protected — your browser has agreed not to auto-clear this data. Clearing browsing data still erases it.'
+      : 'Storage: not protected — the browser may clear this data if the device runs low on space. Keep a backup link.';
+  }catch(e){ storeLine.textContent=''; }
+}
+
+/* ---- first run / restore-from-link ---- */
+async function boot(){
+  meta.visits=(meta.visits||0)+1;
+  const hash=location.hash||'';
+  if(/b1\./.test(hash)){
+    const applied=await tryRestore(hash,true);
+    try{ history.replaceState(null,'',location.pathname+location.search); }
+    catch(e){ location.hash=''; }
+    if(applied){ meta.seen=1; }
+  }
+  if(!meta.seen){
+    document.getElementById('welcome').hidden=false;
+  }
+  saveMeta();
+  renderAlerts();
+  askPersist();
+}
+document.getElementById('welcomeOk').addEventListener('click',()=>{
+  document.getElementById('welcome').hidden=true;
+  meta.seen=1; saveMeta();
+});
+document.getElementById('btnIntro').addEventListener('click',()=>{
+  document.getElementById('welcome').hidden=false;
+});
+
 paint();
+boot();
 </script>
 </body>
 </html>
