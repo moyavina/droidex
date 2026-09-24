@@ -34,6 +34,7 @@ h1 .tt{
 .topbar{border-bottom:1px solid var(--edge)}
 
 
+:root{--spark:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 34 34%22%3E%3Cg fill=%22%23fff%22%3E%3Cpath d=%22M13.5,8.0 Q15.4,18.6 26.0,20.5 Q15.4,22.4 13.5,33.0 Q11.6,22.4 1.0,20.5 Q11.6,18.6 13.5,8.0 Z%22/%3E%3Cpath d=%22M25.5,1.4000000000000004 Q26.5,7.0 32.1,8 Q26.5,9.0 25.5,14.6 Q24.5,9.0 18.9,8 Q24.5,7.0 25.5,1.4000000000000004 Z%22/%3E%3C/g%3E%3C/svg%3E")}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -70,7 +71,11 @@ h1 em{
   font-size:clamp(13px,1.9vw,17px);letter-spacing:.03em;color:var(--ink);
   margin-top:5px;display:flex;align-items:center;justify-content:flex-end;gap:6px;white-space:nowrap;
 }
-.flaw .st{color:#fff;font-style:normal;font-size:1.05em;text-shadow:0 0 8px rgba(255,182,39,.55)}
+.flaw .st{
+  display:inline-block;width:1.05em;height:1.05em;flex:none;
+  -webkit-mask:var(--spark) center/contain no-repeat;mask:var(--spark) center/contain no-repeat;
+  background:#fff;filter:drop-shadow(0 0 6px rgba(255,255,255,.5));
+}
 .flaw .mult{color:#fff}
 .pbar{height:5px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:10px}
 .pbar>i{display:block;height:100%;width:0;background:var(--pfill);box-shadow:0 0 12px var(--accent-glow);transition:width .4s ease}
@@ -201,7 +206,11 @@ thead th{
 thead th.name{text-align:left;color:var(--ink-soft);width:242px}
 thead th.rbwh{background:linear-gradient(90deg,#ff5d5d,#ffb03c,#ffe93c,#4fe08a,#3cc8ff,#b06cf5);-webkit-background-clip:text;background-clip:text;color:transparent}
 thead th.stlh{background:linear-gradient(90deg,#a06e18,#e0a627,#ffe08a,#e0a627,#a06e18);-webkit-background-clip:text;background-clip:text;color:transparent}
-th .fstar{display:block;font-style:normal;font-size:13px;line-height:1;margin-bottom:2px}
+th .fstar{
+  display:block;width:14px;height:14px;margin:0 auto 2px;
+  -webkit-mask:var(--spark) center/contain no-repeat;mask:var(--spark) center/contain no-repeat;
+  background:currentColor;
+}
 tbody td{background:var(--rowbg);text-align:center;vertical-align:middle;position:relative}
 tbody td:first-child{border-radius:9px 0 0 9px;text-align:left;padding:7px 12px}
 tbody td:last-child{border-radius:0 9px 9px 0}
@@ -240,6 +249,10 @@ tr.done .nm{color:var(--rc)}
 }
 .cell.on::after{opacity:0;transition:opacity .2s}
 .cell>i,.fcell>i{position:absolute;inset:0;display:grid;place-items:center;z-index:4;font-style:normal;line-height:1}
+.fcell>i.spk{
+  -webkit-mask:var(--spark) center/60% no-repeat;mask:var(--spark) center/60% no-repeat;
+  background:currentColor;
+}
 
 /* ---- GOLD: rich gold, no shimmer ---- */
 .cell.on[data-v="gold"]{
@@ -440,12 +453,35 @@ td.vc:has(.cell.stl.on)::before{
 /* flawless sparkle — on the cell's container, so the cell can clip its own layers.
    Anchored to the cell centre so it lands on the corner whatever the column width. */
 tr.fl td.vc::after{
-  content:'✦';position:absolute;top:-4px;left:calc(50% + 9px);
-  font-size:11px;line-height:1;color:#fff;z-index:3;
-  text-shadow:0 0 2px #000,0 0 3px #000,0 0 6px rgba(0,0,0,.9);
+  content:'';position:absolute;top:-5px;left:calc(50% + 7px);
+  width:12px;height:12px;z-index:3;transform-origin:center;
+  -webkit-mask:var(--spark) center/contain no-repeat;mask:var(--spark) center/contain no-repeat;
+  background:#fff;
+  filter:drop-shadow(0 0 2px rgba(0,0,0,.95)) drop-shadow(0 0 4px rgba(0,0,0,.75));
+}
+/* checking Flawless runs the sparkles on left to right, then flashes the circle */
+tr.fl.cascade td.vc::after{
+  animation:spkPop .42s cubic-bezier(.2,.9,.3,1) backwards;
+  animation-delay:calc(var(--i,0) * 55ms);
+}
+@keyframes spkPop{
+  0%{opacity:0;transform:scale(.25) rotate(-70deg)}
+  55%{opacity:1;transform:scale(1.55) rotate(12deg)}
+  100%{opacity:1;transform:scale(1) rotate(0deg)}
+}
+tr.fl.cascade .fcell.on{animation:flawFlash .6s cubic-bezier(.2,.9,.3,1) .42s backwards}
+tr.fl.cascade .fcell.on>i{animation:flawSpin .6s cubic-bezier(.2,.9,.3,1) .42s backwards}
+@keyframes flawFlash{
+  0%{transform:scale(.55);filter:brightness(1)}
+  45%{transform:scale(1.42);filter:brightness(1.6) drop-shadow(0 0 12px rgba(255,255,255,.95))}
+  100%{transform:scale(1);filter:brightness(1)}
+}
+@keyframes flawSpin{
+  0%{transform:rotate(-150deg) scale(.3)}
+  100%{transform:rotate(0deg) scale(1)}
 }
 @media(max-width:600px){
-  tr.fl td.vc::after{left:calc(50% + 7px);top:-3px}
+  tr.fl td.vc::after{left:calc(50% + 5px);top:-4px;width:11px;height:11px}
 }
 .fcell{--vt:#ffffff;border-radius:50%}
 .fcell.on{background:#fff;color:#141822;--ring:#fff;--glow:rgba(255,255,255,.62);--gs:11px}
@@ -529,7 +565,7 @@ td.na{color:var(--ink-soft);opacity:.35;font-family:'Barlow Condensed',sans-seri
       </div>
       <div class="counter">
         <div class="big" id="bigCount">0/590</div>
-        <div class="flaw"><span class="st">✦</span><span id="flawTxt">0/83</span><span class="mult" id="flawMult">(x0.00)</span></div>
+        <div class="flaw"><span class="st"></span><span id="flawTxt">0/83</span><span class="mult" id="flawMult">(x0.00)</span></div>
       </div>
     </header>
     <div class="pbar"><i id="pfill"></i></div>
@@ -758,7 +794,7 @@ for(const r of order){
         <tr>
           <th class="name">Droid</th>
           ${VARIANTS.map(v=>`<th ${v.rbw?'class="rbwh"':v.stl?'class="stlh"':''} style="--vt:${v.tone}">${v.label}</th>`).join('')}
-          <th style="--vt:#ffffff"><span class="fstar">✦</span>Flawless</th>
+          <th style="--vt:#ffffff"><span class="fstar"></span>Flawless</th>
         </tr>
         <tr class="qrow">
           <td></td>
@@ -773,12 +809,13 @@ for(const r of order){
     const tr=document.createElement('tr');
     tr.dataset.id=d.id;
     let tds=`<td class="name"><span class="nm">${d.name}</span>${d.cls?(d.cls==='Protocol'?`<span class="cls proto"><svg class="pico" viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1l9.5 5.5v13L12 25 2.5 19.5v-13z" fill="currentColor"/><rect x="8.6" y="8.2" width="6.8" height="10" rx="1.4" fill="#2a1d05"/><rect x="10" y="10" width="4" height="2.8" rx=".6" fill="currentColor"/><rect x="10" y="14.2" width="4" height="1.5" rx=".5" fill="currentColor"/></svg>Protocol</span>`:`<span class="cls">${d.cls}</span>`):''}${d.fuse?`<button class="fusetag" data-id="${d.id}" aria-expanded="false" title="Show fusion recipe"><img class="fico" src="data:image/png;base64,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" alt="">Fusion <span class="car">▾</span></button>`:''}</td>`;
+    let vi=0;
     for(const v of VARIANTS){
       if(r==='iconic'&&v.key!=='default'){ tds+=`<td class="na">—</td>`; continue; }
-      tds+=`<td class="vc"><button class="cell ${v.rbw?'rbw':''}${v.stl?'stl':''}" data-id="${d.id}" data-v="${v.key}" style="--vt:${v.tone};${tileVars(d.id,v.key)}" role="switch" aria-checked="false" aria-label="${d.name} ${v.label}">${v.stl?'<u></u>':''}<i>✓</i></button></td>`;
+      tds+=`<td class="vc" style="--i:${vi++}"><button class="cell ${v.rbw?'rbw':''}${v.stl?'stl':''}" data-id="${d.id}" data-v="${v.key}" style="--vt:${v.tone};${tileVars(d.id,v.key)}" role="switch" aria-checked="false" aria-label="${d.name} ${v.label}">${v.stl?'<u></u>':''}<i>✓</i></button></td>`;
     }
     tds += r==='iconic' ? `<td class="na">—</td>`
-      : `<td><button class="fcell" data-id="${d.id}" role="switch" aria-checked="false" aria-label="${d.name} Flawless"><i>✦</i></button></td>`;
+      : `<td><button class="fcell" data-id="${d.id}" role="switch" aria-checked="false" aria-label="${d.name} Flawless"><i class="spk"></i></button></td>`;
     tr.innerHTML=tds;
     tb.appendChild(tr);
     if(d.fuse){
@@ -819,7 +856,17 @@ document.addEventListener('click',e=>{
             setTimeout(()=>c.classList.remove('just'),1100); }
     bumpChanges(1); save(); paint(); return; }
   const f=e.target.closest('.fcell');
-  if(f){ const id=f.dataset.id; if(state.f[id]) delete state.f[id]; else state.f[id]=1; bumpChanges(1); save(); paint(); return; }
+  if(f){
+    const id=f.dataset.id, turningOn=!state.f[id];
+    if(state.f[id]) delete state.f[id]; else state.f[id]=1;
+    bumpChanges(1); save(); paint();
+    if(turningOn){                       /* run the sparkles left to right */
+      const tr=f.closest('tr');
+      tr.classList.remove('cascade'); void tr.offsetWidth; tr.classList.add('cascade');
+      setTimeout(()=>tr.classList.remove('cascade'),1200);
+    }
+    return;
+  }
   const ft=e.target.closest('.fusetag');
   if(ft){
     const row=document.querySelector(`.fuseRow[data-for="${ft.dataset.id}"]`);
