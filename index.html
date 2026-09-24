@@ -70,8 +70,8 @@ h1 em{
   font-size:clamp(13px,1.9vw,17px);letter-spacing:.03em;color:var(--ink);
   margin-top:5px;display:flex;align-items:center;justify-content:flex-end;gap:6px;white-space:nowrap;
 }
-.flaw .st{color:var(--amber);font-style:normal;font-size:1.05em;text-shadow:0 0 8px rgba(255,182,39,.55)}
-.flaw .mult{color:var(--amber)}
+.flaw .st{color:#fff;font-style:normal;font-size:1.05em;text-shadow:0 0 8px rgba(255,182,39,.55)}
+.flaw .mult{color:#fff}
 .pbar{height:5px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:10px}
 .pbar>i{display:block;height:100%;width:0;background:var(--pfill);box-shadow:0 0 12px var(--accent-glow);transition:width .4s ease}
 
@@ -92,6 +92,7 @@ h1 em{
 .chip.stl .lb{background:linear-gradient(90deg,#8a5a12,#e0a627,#ffe08a,#e0a627,#a06e18);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 /* ---------- backup ---------- */
+
 details.tools{
   margin-bottom:20px;padding:14px 20px;border-radius:14px;
   border:1px solid var(--edge);background:rgba(0,0,0,.3);
@@ -190,22 +191,22 @@ section.rar::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;
 .rhead h2{font-family:'Bungee',cursive;font-size:17px;margin:0;color:var(--rc);letter-spacing:.02em}
 .rhead .rcount{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;letter-spacing:.05em;color:var(--ink-soft)}
 .tblwrap{overflow-x:auto;position:relative;z-index:2}
-table{border-collapse:separate;border-spacing:0 5px;width:100%;min-width:700px}
+table{border-collapse:separate;border-spacing:0 5px;width:100%;min-width:640px;table-layout:fixed}
 th,td{padding:0}
 thead th{
   font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:700;
-  font-size:15px;letter-spacing:.05em;text-transform:uppercase;
-  color:var(--vt,var(--ink-soft));padding:2px 6px 7px;text-align:center;min-width:60px;
+  font-size:14px;letter-spacing:.03em;text-transform:uppercase;
+  color:var(--vt,var(--ink-soft));padding:2px 3px 7px;text-align:center;
 }
-thead th.name{text-align:left;color:var(--ink-soft);min-width:172px}
+thead th.name{text-align:left;color:var(--ink-soft);width:242px}
 thead th.rbwh{background:linear-gradient(90deg,#ff5d5d,#ffb03c,#ffe93c,#4fe08a,#3cc8ff,#b06cf5);-webkit-background-clip:text;background-clip:text;color:transparent}
 thead th.stlh{background:linear-gradient(90deg,#a06e18,#e0a627,#ffe08a,#e0a627,#a06e18);-webkit-background-clip:text;background-clip:text;color:transparent}
 th .fstar{display:block;font-style:normal;font-size:13px;line-height:1;margin-bottom:2px}
-tbody td{background:var(--rowbg);text-align:center;vertical-align:middle}
+tbody td{background:var(--rowbg);text-align:center;vertical-align:middle;position:relative}
 tbody td:first-child{border-radius:9px 0 0 9px;text-align:left;padding:7px 12px}
 tbody td:last-child{border-radius:0 9px 9px 0}
 tr.qrow td{background:transparent;text-align:center;padding-bottom:2px}
-td.name{min-width:172px}
+td.name{width:242px}
 .nm{font-size:16px;font-weight:600;letter-spacing:.01em}
 .cls{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:11px;color:var(--ink-soft);letter-spacing:.12em;text-transform:uppercase;margin-left:8px}
 tr.done td.name{box-shadow:inset 3px 0 0 var(--rc)}
@@ -218,29 +219,199 @@ tr.done .nm{color:var(--rc)}
   border:1.5px solid color-mix(in srgb, var(--vt) 55%, transparent);
   background:color-mix(in srgb, var(--vt) 7%, transparent);
   color:transparent;font-size:15px;line-height:1;font-weight:700;
-  transition:background .12s,color .12s,transform .08s;
+  transition:background-color .12s,color .12s,transform .08s;
+  overflow:hidden;
   margin:3px 4px;font-family:'Barlow Condensed',sans-serif;
 }
 .cell:hover,.fcell:hover{transform:scale(1.08)}
 .cell:focus-visible,.fcell:focus-visible,.qa:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 .cell.on{background:var(--vt);color:#150b24;border-color:var(--vt);box-shadow:0 0 10px color-mix(in srgb, var(--vt) 55%, transparent)}
-.cell.rbw.on{background:linear-gradient(135deg,#ff5d5d,#ffb03c,#ffe93c,#4fe08a,#3cc8ff,#b06cf5);border-color:#e05df0;box-shadow:0 0 10px rgba(224,93,240,.5)}
+/* ============ variant materials ============
+   Built from the in-game Droidex plus real damascus reference.
+   Patterns are inline SVG (rasterised once); all motion is transform/opacity
+   so the compositor handles it. ::before = always-on pattern layer,
+   ::after = shimmer/hover layer. Animation only runs on rows in view. */
+
+.cell.on::before,.cell.on::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+}
+.cell.on::after{opacity:0;transition:opacity .2s}
+.cell>i,.fcell>i{position:relative;z-index:4;font-style:normal}
+
+/* ---- GOLD: struck metal, not flat yellow ---- */
+.cell.on[data-v="gold"]{
+  background:linear-gradient(150deg,#ffd964,#f0b820 55%,#d99a15);
+  border-color:#f0be2e;color:#241a02;
+  box-shadow:0 0 10px rgba(240,190,46,.5);
+}
+
+@keyframes vSweep{0%{transform:translateX(-34%)}45%,100%{transform:translateX(34%)}}
+
+/* ---- DIAMOND: cut gem facets ---- */
+.cell.on[data-v="diamond"]{
+  background:
+    radial-gradient(circle at 34% 28%, rgba(176,240,252,.45), transparent 60%),
+    linear-gradient(150deg,#42cfe6,#1aa8c6 55%,#127f99);
+  border-color:#35d6f5;color:#0c1420;
+  box-shadow:0 0 10px rgba(53,214,245,.5);
+}
+.cell.on[data-v="diamond"]::before{
+  inset:-40%;
+  background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cpolygon points=%22-33,-31 9,-33 -21,10%22 fill=%22%23ffffff%22 opacity=%220.11%22/%3E%3Cpolygon points=%229,-33 3,3 -21,10%22 fill=%22%230a3d4a%22 opacity=%220.08%22/%3E%3Cpolygon points=%229,-33 32,-30 3,3%22 fill=%22%23ffffff%22 opacity=%220.26%22/%3E%3Cpolygon points=%2232,-30 24,-11 3,3%22 fill=%22%230a3d4a%22 opacity=%220.28%22/%3E%3Cpolygon points=%2232,-30 57,-32 24,-11%22 fill=%22%230a3d4a%22 opacity=%220.39%22/%3E%3Cpolygon points=%2257,-32 65,-10 24,-11%22 fill=%22%230a3d4a%22 opacity=%220.06%22/%3E%3Cpolygon points=%2257,-32 99,-26 65,-10%22 fill=%22%230a3d4a%22 opacity=%220.21%22/%3E%3Cpolygon points=%2299,-26 89,-6 65,-10%22 fill=%22%230a3d4a%22 opacity=%220.12%22/%3E%3Cpolygon points=%2299,-26 119,-36 89,-6%22 fill=%22%230a3d4a%22 opacity=%220.26%22/%3E%3Cpolygon points=%22119,-36 118,-1 89,-6%22 fill=%22%23ffffff%22 opacity=%220.18%22/%3E%3Cpolygon points=%22119,-36 151,-25 118,-1%22 fill=%22%23ffffff%22 opacity=%220.41%22/%3E%3Cpolygon points=%22151,-25 159,8 118,-1%22 fill=%22%23ffffff%22 opacity=%220.31%22/%3E%3Cpolygon points=%22151,-25 196,-42 159,8%22 fill=%22%230a3d4a%22 opacity=%220.10%22/%3E%3Cpolygon points=%22196,-42 192,3 159,8%22 fill=%22%23ffffff%22 opacity=%220.06%22/%3E%3Cpolygon points=%22-21,10 3,3 -32,36%22 fill=%22%23ffffff%22 opacity=%220.31%22/%3E%3Cpolygon points=%223,3 -1,27 -32,36%22 fill=%22%23ffffff%22 opacity=%220.06%22/%3E%3Cpolygon points=%223,3 24,-11 -1,27%22 fill=%22%23ffffff%22 opacity=%220.23%22/%3E%3Cpolygon points=%2224,-11 43,43 -1,27%22 fill=%22%23ffffff%22 opacity=%220.17%22/%3E%3Cpolygon points=%2224,-11 65,-10 43,43%22 fill=%22%23ffffff%22 opacity=%220.08%22/%3E%3Cpolygon points=%2265,-10 71,37 43,43%22 fill=%22%23ffffff%22 opacity=%220.32%22/%3E%3Cpolygon points=%2265,-10 89,-6 71,37%22 fill=%22%23ffffff%22 opacity=%220.32%22/%3E%3Cpolygon points=%2289,-6 92,26 71,37%22 fill=%22%23ffffff%22 opacity=%220.34%22/%3E%3Cpolygon points=%2289,-6 118,-1 92,26%22 fill=%22%23ffffff%22 opacity=%220.18%22/%3E%3Cpolygon points=%22118,-1 123,23 92,26%22 fill=%22%23ffffff%22 opacity=%220.38%22/%3E%3Cpolygon points=%22118,-1 159,8 123,23%22 fill=%22%23ffffff%22 opacity=%220.20%22/%3E%3Cpolygon points=%22159,8 166,30 123,23%22 fill=%22%23ffffff%22 opacity=%220.37%22/%3E%3Cpolygon points=%22159,8 192,3 166,30%22 fill=%22%23ffffff%22 opacity=%220.28%22/%3E%3Cpolygon points=%22192,3 200,30 166,30%22 fill=%22%23ffffff%22 opacity=%220.27%22/%3E%3Cpolygon points=%22-32,36 -1,27 -22,72%22 fill=%22%23ffffff%22 opacity=%220.08%22/%3E%3Cpolygon points=%22-1,27 -11,58 -22,72%22 fill=%22%23ffffff%22 opacity=%220.42%22/%3E%3Cpolygon points=%22-1,27 43,43 -11,58%22 fill=%22%23ffffff%22 opacity=%220.32%22/%3E%3Cpolygon points=%2243,43 41,63 -11,58%22 fill=%22%23ffffff%22 opacity=%220.32%22/%3E%3Cpolygon points=%2243,43 71,37 41,63%22 fill=%22%23ffffff%22 opacity=%220.21%22/%3E%3Cpolygon points=%2271,37 75,62 41,63%22 fill=%22%23ffffff%22 opacity=%220.08%22/%3E%3Cpolygon points=%2271,37 92,26 75,62%22 fill=%22%23ffffff%22 opacity=%220.06%22/%3E%3Cpolygon points=%2292,26 87,67 75,62%22 fill=%22%230a3d4a%22 opacity=%220.23%22/%3E%3Cpolygon points=%2292,26 123,23 87,67%22 fill=%22%23ffffff%22 opacity=%220.31%22/%3E%3Cpolygon points=%22123,23 134,59 87,67%22 fill=%22%23ffffff%22 opacity=%220.28%22/%3E%3Cpolygon points=%22123,23 166,30 134,59%22 fill=%22%230a3d4a%22 opacity=%220.14%22/%3E%3Cpolygon points=%22166,30 151,60 134,59%22 fill=%22%23ffffff%22 opacity=%220.16%22/%3E%3Cpolygon points=%22166,30 200,30 151,60%22 fill=%22%230a3d4a%22 opacity=%220.12%22/%3E%3Cpolygon points=%22200,30 202,70 151,60%22 fill=%22%23ffffff%22 opacity=%220.39%22/%3E%3Cpolygon points=%22-22,72 -11,58 -40,90%22 fill=%22%23ffffff%22 opacity=%220.21%22/%3E%3Cpolygon points=%22-11,58 -9,86 -40,90%22 fill=%22%23ffffff%22 opacity=%220.17%22/%3E%3Cpolygon points=%22-11,58 41,63 -9,86%22 fill=%22%23ffffff%22 opacity=%220.12%22/%3E%3Cpolygon points=%2241,63 39,89 -9,86%22 fill=%22%23ffffff%22 opacity=%220.35%22/%3E%3Cpolygon points=%2241,63 75,62 39,89%22 fill=%22%23ffffff%22 opacity=%220.38%22/%3E%3Cpolygon points=%2275,62 65,95 39,89%22 fill=%22%230a3d4a%22 opacity=%220.27%22/%3E%3Cpolygon points=%2275,62 87,67 65,95%22 fill=%22%23ffffff%22 opacity=%220.10%22/%3E%3Cpolygon points=%2287,67 89,101 65,95%22 fill=%22%23ffffff%22 opacity=%220.36%22/%3E%3Cpolygon points=%2287,67 134,59 89,101%22 fill=%22%23ffffff%22 opacity=%220.31%22/%3E%3Cpolygon points=%22134,59 120,99 89,101%22 fill=%22%230a3d4a%22 opacity=%220.15%22/%3E%3Cpolygon points=%22134,59 151,60 120,99%22 fill=%22%230a3d4a%22 opacity=%220.22%22/%3E%3Cpolygon points=%22151,60 152,94 120,99%22 fill=%22%23ffffff%22 opacity=%220.13%22/%3E%3Cpolygon points=%22151,60 202,70 152,94%22 fill=%22%23ffffff%22 opacity=%220.28%22/%3E%3Cpolygon points=%22202,70 186,91 152,94%22 fill=%22%23ffffff%22 opacity=%220.17%22/%3E%3Cpolygon points=%22-40,90 -9,86 -22,135%22 fill=%22%23ffffff%22 opacity=%220.41%22/%3E%3Cpolygon points=%22-9,86 -4,136 -22,135%22 fill=%22%230a3d4a%22 opacity=%220.08%22/%3E%3Cpolygon points=%22-9,86 39,89 -4,136%22 fill=%22%230a3d4a%22 opacity=%220.37%22/%3E%3Cpolygon points=%2239,89 26,126 -4,136%22 fill=%22%23ffffff%22 opacity=%220.31%22/%3E%3Cpolygon points=%2239,89 65,95 26,126%22 fill=%22%23ffffff%22 opacity=%220.16%22/%3E%3Cpolygon points=%2265,95 72,131 26,126%22 fill=%22%230a3d4a%22 opacity=%220.06%22/%3E%3Cpolygon points=%2265,95 89,101 72,131%22 fill=%22%230a3d4a%22 opacity=%220.22%22/%3E%3Cpolygon points=%2289,101 87,139 72,131%22 fill=%22%230a3d4a%22 opacity=%220.36%22/%3E%3Cpolygon points=%2289,101 120,99 87,139%22 fill=%22%230a3d4a%22 opacity=%220.10%22/%3E%3Cpolygon points=%22120,99 122,123 87,139%22 fill=%22%23ffffff%22 opacity=%220.28%22/%3E%3Cpolygon points=%22120,99 152,94 122,123%22 fill=%22%23ffffff%22 opacity=%220.28%22/%3E%3Cpolygon points=%22152,94 166,124 122,123%22 fill=%22%23ffffff%22 opacity=%220.35%22/%3E%3Cpolygon points=%22152,94 186,91 166,124%22 fill=%22%230a3d4a%22 opacity=%220.30%22/%3E%3Cpolygon points=%22186,91 188,119 166,124%22 fill=%22%230a3d4a%22 opacity=%220.23%22/%3E%3Cpolygon points=%22-22,135 -4,136 -41,162%22 fill=%22%23ffffff%22 opacity=%220.05%22/%3E%3Cpolygon points=%22-4,136 -6,162 -41,162%22 fill=%22%230a3d4a%22 opacity=%220.31%22/%3E%3Cpolygon points=%22-4,136 26,126 -6,162%22 fill=%22%230a3d4a%22 opacity=%220.15%22/%3E%3Cpolygon points=%2226,126 29,159 -6,162%22 fill=%22%23ffffff%22 opacity=%220.31%22/%3E%3Cpolygon points=%2226,126 72,131 29,159%22 fill=%22%23ffffff%22 opacity=%220.28%22/%3E%3Cpolygon points=%2272,131 74,160 29,159%22 fill=%22%23ffffff%22 opacity=%220.20%22/%3E%3Cpolygon points=%2272,131 87,139 74,160%22 fill=%22%230a3d4a%22 opacity=%220.39%22/%3E%3Cpolygon points=%2287,139 98,168 74,160%22 fill=%22%23ffffff%22 opacity=%220.40%22/%3E%3Cpolygon points=%2287,139 122,123 98,168%22 fill=%22%23ffffff%22 opacity=%220.10%22/%3E%3Cpolygon points=%22122,123 121,152 98,168%22 fill=%22%23ffffff%22 opacity=%220.28%22/%3E%3Cpolygon points=%22122,123 166,124 121,152%22 fill=%22%23ffffff%22 opacity=%220.19%22/%3E%3Cpolygon points=%22166,124 169,167 121,152%22 fill=%22%23ffffff%22 opacity=%220.38%22/%3E%3Cpolygon points=%22166,124 188,119 169,167%22 fill=%22%23ffffff%22 opacity=%220.40%22/%3E%3Cpolygon points=%22188,119 186,153 169,167%22 fill=%22%230a3d4a%22 opacity=%220.29%22/%3E%3Cpolygon points=%22-41,162 -6,162 -27,202%22 fill=%22%23ffffff%22 opacity=%220.32%22/%3E%3Cpolygon points=%22-6,162 -7,202 -27,202%22 fill=%22%23ffffff%22 opacity=%220.29%22/%3E%3Cpolygon points=%22-6,162 29,159 -7,202%22 fill=%22%23ffffff%22 opacity=%220.13%22/%3E%3Cpolygon points=%2229,159 40,194 -7,202%22 fill=%22%23ffffff%22 opacity=%220.41%22/%3E%3Cpolygon points=%2229,159 74,160 40,194%22 fill=%22%23ffffff%22 opacity=%220.25%22/%3E%3Cpolygon points=%2274,160 62,183 40,194%22 fill=%22%23ffffff%22 opacity=%220.17%22/%3E%3Cpolygon points=%2274,160 98,168 62,183%22 fill=%22%230a3d4a%22 opacity=%220.37%22/%3E%3Cpolygon points=%2298,168 86,202 62,183%22 fill=%22%23ffffff%22 opacity=%220.08%22/%3E%3Cpolygon points=%2298,168 121,152 86,202%22 fill=%22%23ffffff%22 opacity=%220.25%22/%3E%3Cpolygon points=%22121,152 122,197 86,202%22 fill=%22%230a3d4a%22 opacity=%220.23%22/%3E%3Cpolygon points=%22121,152 169,167 122,197%22 fill=%22%230a3d4a%22 opacity=%220.35%22/%3E%3Cpolygon points=%22169,167 155,199 122,197%22 fill=%22%230a3d4a%22 opacity=%220.35%22/%3E%3Cpolygon points=%22169,167 186,153 155,199%22 fill=%22%23ffffff%22 opacity=%220.17%22/%3E%3Cpolygon points=%22186,153 194,187 155,199%22 fill=%22%230a3d4a%22 opacity=%220.10%22/%3E%3Cpolygon points=%22-33,-31 9,-33 -21,10%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%2299,-26 89,-6 65,-10%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%22-21,10 3,3 -32,36%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%2289,-6 92,26 71,37%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%22-32,36 -1,27 -22,72%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%2292,26 87,67 75,62%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%22-22,72 -11,58 -40,90%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%2287,67 89,101 65,95%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%22-40,90 -9,86 -22,135%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%2289,101 87,139 72,131%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%22-22,135 -4,136 -41,162%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%2287,139 98,168 74,160%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%22-41,162 -6,162 -27,202%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3Cpolygon points=%2298,168 86,202 62,183%22 fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%22.7%22 opacity=%22.55%22/%3E%3C/svg%3E") center/cover no-repeat;
+  opacity:.3;
+}
+.cell.on[data-v="diamond"]::after{
+  background:
+    radial-gradient(1.6px 1.6px at 30% 34%, #fff, transparent 100%),
+    radial-gradient(1.4px 1.4px at 74% 62%, #fff, transparent 100%),
+    radial-gradient(1.2px 1.2px at 52% 20%, #fff, transparent 100%);
+  opacity:.5;
+}
+@keyframes vTwinkle{0%,100%{opacity:.3}50%{opacity:1}}
+.cell.on[data-v="diamond"]:hover::after{animation:vTwinkle 1.4s ease-in-out infinite}
+
+/* ---- RAINBOW: spectrum cycle under faint sharp facet lines ---- */
+.cell.rbw.on{
+  background:linear-gradient(125deg,#ff3b3b,#ff9f2e,#ffe93c,#4fe08a,#3cc8ff,#8f5cf6,#ff3b3b);
+  border-color:#e05df0;color:#1b0b22;
+  box-shadow:0 0 10px rgba(224,93,240,.5);
+}
+tr.viz .cell.rbw.on{animation:vHue 11s ease-in-out infinite alternate}
+@keyframes vHue{from{filter:hue-rotate(-10deg)}to{filter:hue-rotate(10deg)}}
+.cell.rbw.on::after{
+  inset:0 -100%;
+  background:linear-gradient(90deg,#ff2d2d,#ffd21f,#2ef08a,#1fc4ff,#a13cff,#ff2d2d);
+  background-size:33.333% 100%;background-repeat:repeat-x;
+}
+.cell.rbw.on:hover::after{opacity:.22;animation:vFlow 4.2s linear infinite}
+@keyframes vFlow{from{transform:translateX(0)}to{transform:translateX(33.333%)}}
+.cell.rbw.on::before{
+  inset:-30%;
+  background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cg fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%221%22 opacity=%22.5%22%3E%3Cpolygon points=%22-28,-25 6,-21 -34,8%22/%3E%3Cpolygon points=%226,-21 5,-7 -34,8%22/%3E%3Cpolygon points=%226,-21 35,-22 5,-7%22/%3E%3Cpolygon points=%2235,-22 36,-7 5,-7%22/%3E%3Cpolygon points=%2235,-22 51,-31 36,-7%22/%3E%3Cpolygon points=%2251,-31 62,-7 36,-7%22/%3E%3Cpolygon points=%2251,-31 99,-27 62,-7%22/%3E%3Cpolygon points=%2299,-27 80,7 62,-7%22/%3E%3Cpolygon points=%2299,-27 128,-38 80,7%22/%3E%3Cpolygon points=%22128,-38 114,-6 80,7%22/%3E%3Cpolygon points=%22128,-38 149,-35 114,-6%22/%3E%3Cpolygon points=%22149,-35 160,7 114,-6%22/%3E%3Cpolygon points=%22149,-35 181,-29 160,7%22/%3E%3Cpolygon points=%22181,-29 176,9 160,7%22/%3E%3Cpolygon points=%22181,-29 200,-36 176,9%22/%3E%3Cpolygon points=%22200,-36 211,4 176,9%22/%3E%3Cpolygon points=%22-34,8 5,-7 -36,39%22/%3E%3Cpolygon points=%225,-7 4,39 -36,39%22/%3E%3Cpolygon points=%225,-7 36,-7 4,39%22/%3E%3Cpolygon points=%2236,-7 38,26 4,39%22/%3E%3Cpolygon points=%2236,-7 62,-7 38,26%22/%3E%3Cpolygon points=%2262,-7 57,23 38,26%22/%3E%3Cpolygon points=%2262,-7 80,7 57,23%22/%3E%3Cpolygon points=%2280,7 83,21 57,23%22/%3E%3Cpolygon points=%2280,7 114,-6 83,21%22/%3E%3Cpolygon points=%22114,-6 116,32 83,21%22/%3E%3Cpolygon points=%22114,-6 160,7 116,32%22/%3E%3Cpolygon points=%22160,7 140,34 116,32%22/%3E%3Cpolygon points=%22160,7 176,9 140,34%22/%3E%3Cpolygon points=%22176,9 177,26 140,34%22/%3E%3Cpolygon points=%22176,9 211,4 177,26%22/%3E%3Cpolygon points=%22211,4 216,30 177,26%22/%3E%3Cpolygon points=%22-36,39 4,39 -34,60%22/%3E%3Cpolygon points=%224,39 4,51 -34,60%22/%3E%3Cpolygon points=%224,39 38,26 4,51%22/%3E%3Cpolygon points=%2238,26 40,50 4,51%22/%3E%3Cpolygon points=%2238,26 57,23 40,50%22/%3E%3Cpolygon points=%2257,23 65,67 40,50%22/%3E%3Cpolygon points=%2257,23 83,21 65,67%22/%3E%3Cpolygon points=%2283,21 80,66 65,67%22/%3E%3Cpolygon points=%2283,21 116,32 80,66%22/%3E%3Cpolygon points=%22116,32 117,62 80,66%22/%3E%3Cpolygon points=%22116,32 140,34 117,62%22/%3E%3Cpolygon points=%22140,34 140,51 117,62%22/%3E%3Cpolygon points=%22140,34 177,26 140,51%22/%3E%3Cpolygon points=%22177,26 174,69 140,51%22/%3E%3Cpolygon points=%22177,26 216,30 174,69%22/%3E%3Cpolygon points=%22216,30 204,65 174,69%22/%3E%3Cpolygon points=%22-34,60 4,51 -21,99%22/%3E%3Cpolygon points=%224,51 -3,87 -21,99%22/%3E%3Cpolygon points=%224,51 40,50 -3,87%22/%3E%3Cpolygon points=%2240,50 30,96 -3,87%22/%3E%3Cpolygon points=%2240,50 65,67 30,96%22/%3E%3Cpolygon points=%2265,67 52,95 30,96%22/%3E%3Cpolygon points=%2265,67 80,66 52,95%22/%3E%3Cpolygon points=%2280,66 96,97 52,95%22/%3E%3Cpolygon points=%2280,66 117,62 96,97%22/%3E%3Cpolygon points=%22117,62 111,99 96,97%22/%3E%3Cpolygon points=%22117,62 140,51 111,99%22/%3E%3Cpolygon points=%22140,51 142,87 111,99%22/%3E%3Cpolygon points=%22140,51 174,69 142,87%22/%3E%3Cpolygon points=%22174,69 182,98 142,87%22/%3E%3Cpolygon points=%22174,69 204,65 182,98%22/%3E%3Cpolygon points=%22204,65 207,98 182,98%22/%3E%3Cpolygon points=%22-21,99 -3,87 -29,116%22/%3E%3Cpolygon points=%22-3,87 -4,114 -29,116%22/%3E%3Cpolygon points=%22-3,87 30,96 -4,114%22/%3E%3Cpolygon points=%2230,96 22,113 -4,114%22/%3E%3Cpolygon points=%2230,96 52,95 22,113%22/%3E%3Cpolygon points=%2252,95 64,130 22,113%22/%3E%3Cpolygon points=%2252,95 96,97 64,130%22/%3E%3Cpolygon points=%2296,97 83,111 64,130%22/%3E%3Cpolygon points=%2296,97 111,99 83,111%22/%3E%3Cpolygon points=%22111,99 130,121 83,111%22/%3E%3Cpolygon points=%22111,99 142,87 130,121%22/%3E%3Cpolygon points=%22142,87 148,115 130,121%22/%3E%3Cpolygon points=%22142,87 182,98 148,115%22/%3E%3Cpolygon points=%22182,98 182,127 148,115%22/%3E%3Cpolygon points=%22182,98 207,98 182,127%22/%3E%3Cpolygon points=%22207,98 209,118 182,127%22/%3E%3Cpolygon points=%22-29,116 -4,114 -39,158%22/%3E%3Cpolygon points=%22-4,114 -9,150 -39,158%22/%3E%3Cpolygon points=%22-4,114 22,113 -9,150%22/%3E%3Cpolygon points=%2222,113 37,143 -9,150%22/%3E%3Cpolygon points=%2222,113 64,130 37,143%22/%3E%3Cpolygon points=%2264,130 65,159 37,143%22/%3E%3Cpolygon points=%2264,130 83,111 65,159%22/%3E%3Cpolygon points=%2283,111 93,156 65,159%22/%3E%3Cpolygon points=%2283,111 130,121 93,156%22/%3E%3Cpolygon points=%22130,121 112,149 93,156%22/%3E%3Cpolygon points=%22130,121 148,115 112,149%22/%3E%3Cpolygon points=%22148,115 143,157 112,149%22/%3E%3Cpolygon points=%22148,115 182,127 143,157%22/%3E%3Cpolygon points=%22182,127 176,149 143,157%22/%3E%3Cpolygon points=%22182,127 209,118 176,149%22/%3E%3Cpolygon points=%22209,118 220,157 176,149%22/%3E%3Cpolygon points=%22-39,158 -9,150 -20,179%22/%3E%3Cpolygon points=%22-9,150 0,185 -20,179%22/%3E%3Cpolygon points=%22-9,150 37,143 0,185%22/%3E%3Cpolygon points=%2237,143 30,176 0,185%22/%3E%3Cpolygon points=%2237,143 65,159 30,176%22/%3E%3Cpolygon points=%2265,159 58,173 30,176%22/%3E%3Cpolygon points=%2265,159 93,156 58,173%22/%3E%3Cpolygon points=%2293,156 88,190 58,173%22/%3E%3Cpolygon points=%2293,156 112,149 88,190%22/%3E%3Cpolygon points=%22112,149 129,183 88,190%22/%3E%3Cpolygon points=%22112,149 143,157 129,183%22/%3E%3Cpolygon points=%22143,157 150,177 129,183%22/%3E%3Cpolygon points=%22143,157 176,149 150,177%22/%3E%3Cpolygon points=%22176,149 172,175 150,177%22/%3E%3Cpolygon points=%22176,149 220,157 172,175%22/%3E%3Cpolygon points=%22220,157 216,187 172,175%22/%3E%3Cpolygon points=%22-20,179 0,185 -33,216%22/%3E%3Cpolygon points=%220,185 5,214 -33,216%22/%3E%3Cpolygon points=%220,185 30,176 5,214%22/%3E%3Cpolygon points=%2230,176 33,215 5,214%22/%3E%3Cpolygon points=%2230,176 58,173 33,215%22/%3E%3Cpolygon points=%2258,173 57,214 33,215%22/%3E%3Cpolygon points=%2258,173 88,190 57,214%22/%3E%3Cpolygon points=%2288,190 86,210 57,214%22/%3E%3Cpolygon points=%2288,190 129,183 86,210%22/%3E%3Cpolygon points=%22129,183 125,214 86,210%22/%3E%3Cpolygon points=%22129,183 150,177 125,214%22/%3E%3Cpolygon points=%22150,177 146,219 125,214%22/%3E%3Cpolygon points=%22150,177 172,175 146,219%22/%3E%3Cpolygon points=%22172,175 183,212 146,219%22/%3E%3Cpolygon points=%22172,175 216,187 183,212%22/%3E%3Cpolygon points=%22216,187 200,211 183,212%22/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;
+  opacity:.24;
+}
+
+/* ---- BESKAR: dark silver, topographic damascus grain, metal shimmer ---- */
+.cell.on[data-v="beskar"]{
+  background:linear-gradient(150deg,#666d78,#3b414a 46%,#262b32 78%,#4a5059);
+  border-color:#b9c2d1;color:#f2f5fa;
+  box-shadow:0 0 10px rgba(185,194,209,.4);
+}
+.cell.on[data-v="beskar"]::before{
+  inset:-45%;
+  background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cg fill=%22none%22 stroke=%22%23e8eef8%22 stroke-width=%221.35%22 opacity=%22.75%22%3E%3Cpolyline points=%220,-8.0 6,-4.1 12,-0.7 18,1.9 24,3.5 30,4.1 36,3.8 42,2.9 48,1.8 54,0.6 60,-0.5 66,-1.4 72,-2.2 78,-3.2 84,-4.4 90,-6.2 96,-8.3 102,-10.7 108,-13.1 114,-15.1 120,-16.3 126,-16.6 132,-15.8 138,-14.1 144,-11.7 150,-9.0 156,-6.5%22/%3E%3Cpolyline points=%220,7.2 6,10.1 12,12.1 18,12.9 24,12.5 30,11.0 36,8.9 42,6.4 48,3.9 54,1.8 60,-0.1 66,-1.5 72,-2.8 78,-4.0 84,-5.4 90,-7.0 96,-8.7 102,-10.4 108,-11.7 114,-12.4 120,-12.2 126,-11.0 132,-9.0 138,-6.2 144,-3.3 150,-0.5 156,1.7%22/%3E%3Cpolyline points=%220,17.5 6,18.4 12,18.2 18,16.8 24,14.3 30,11.1 36,7.6 42,4.3 48,1.4 54,-0.8 60,-2.4 66,-3.4 72,-4.0 78,-4.6 84,-5.1 90,-5.7 96,-6.3 102,-6.6 108,-6.5 114,-5.6 120,-3.9 126,-1.5 132,1.4 138,4.6 144,7.5 150,9.8 156,11.1%22/%3E%3Cpolyline points=%220,21.0 6,20.0 12,17.9 18,14.8 24,11.1 30,7.3 36,3.7 42,0.8 48,-1.3 54,-2.3 60,-2.5 66,-2.1 72,-1.3 78,-0.4 84,0.4 90,1.1 96,1.8 102,2.8 108,4.2 114,6.1 120,8.6 126,11.5 132,14.5 138,17.1 144,19.1 150,20.1 156,20.0%22/%3E%3Cpolyline points=%220,20.3 6,18.0 12,15.0 18,11.5 24,7.9 30,4.8 36,2.5 42,1.2 48,1.1 54,2.0 60,3.7 66,5.8 72,8.0 78,10.1 84,11.9 90,13.5 96,14.9 102,16.4 108,18.2 114,20.2 120,22.4 126,24.6 132,26.5 138,27.7 144,28.0 150,27.2 156,25.4%22/%3E%3Cpolyline points=%220,19.6 6,17.1 12,14.4 18,11.6 24,9.3 30,7.9 36,7.5 42,8.4 48,10.3 54,13.1 60,16.3 66,19.5 72,22.3 78,24.7 84,26.5 90,27.8 96,28.8 102,29.7 108,30.6 114,31.6 120,32.6 126,33.3 132,33.5 138,32.9 144,31.4 150,29.0 156,25.8%22/%3E%3Cpolyline points=%220,22.3 6,20.4 12,18.6 18,17.3 24,16.6 30,17.0 36,18.5 42,21.0 48,24.3 54,27.9 60,31.4 66,34.4 72,36.7 78,38.1 84,38.7 90,38.6 96,38.3 102,37.8 108,37.3 114,36.9 120,36.3 126,35.5 132,34.2 138,32.2 144,29.6 150,26.4 156,23.0%22/%3E%3Cpolyline points=%220,28.5 6,27.5 12,26.8 18,26.7 24,27.4 30,29.1 36,31.6 42,34.8 48,38.3 54,41.5 60,44.1 66,45.7 72,46.3 78,45.9 84,44.7 90,43.0 96,41.1 102,39.3 108,37.7 114,36.2 120,34.8 126,33.2 132,31.4 138,29.1 144,26.6 150,23.9 156,21.5%22/%3E%3Cpolyline points=%220,36.2 6,35.9 12,35.9 18,36.6 24,38.1 30,40.2 36,42.9 42,45.7 48,48.3 54,50.2 60,51.1 66,50.9 72,49.6 78,47.4 84,44.7 90,41.8 96,39.1 102,36.9 108,35.1 114,33.7 120,32.5 126,31.4 132,30.2 138,28.8 144,27.4 150,26.3 156,25.7%22/%3E%3Cpolyline points=%220,43.2 6,43.3 12,43.8 18,44.8 24,46.4 30,48.4 36,50.6 42,52.5 48,53.8 54,54.1 60,53.3 66,51.5 72,48.8 78,45.6 84,42.4 90,39.5 96,37.2 102,35.6 108,34.8 114,34.5 120,34.5 126,34.7 132,34.8 138,34.8 144,35.0 150,35.5 156,36.6%22/%3E%3Cpolyline points=%220,49.2 6,49.6 12,50.3 18,51.4 24,52.9 30,54.4 36,55.9 42,56.7 48,56.8 54,55.9 60,53.9 66,51.3 72,48.1 78,45.0 84,42.3 90,40.4 96,39.5 102,39.4 108,40.2 114,41.4 120,42.8 126,44.2 132,45.5 138,46.7 144,47.9 150,49.3 156,51.1%22/%3E%3Cpolyline points=%220,55.9 6,56.4 12,57.1 18,58.1 24,59.2 30,60.3 36,60.9 42,60.9 48,60.0 54,58.3 60,55.9 66,53.1 72,50.4 78,48.1 84,46.7 90,46.4 96,47.0 102,48.6 108,50.7 114,53.1 120,55.3 126,57.3 132,58.9 138,60.2 144,61.4 150,62.6 156,64.0%22/%3E%3Cpolyline points=%220,64.3 6,64.6 12,65.1 18,65.7 24,66.3 30,66.7 36,66.6 42,65.9 48,64.4 54,62.3 60,59.9 66,57.6 72,55.7 78,54.6 84,54.6 90,55.7 96,57.6 102,60.2 108,63.0 114,65.6 120,67.7 126,69.3 132,70.2 138,70.7 144,70.9 150,71.1 156,71.4%22/%3E%3Cpolyline points=%220,73.4 6,73.2 12,73.0 18,73.1 24,73.0 30,72.7 36,71.9 42,70.6 48,68.8 54,66.7 60,64.6 66,63.0 72,62.1 78,62.2 84,63.4 90,65.4 96,68.1 102,70.9 108,73.5 114,75.5 120,76.7 126,77.1 132,76.8 138,76.1 144,75.1 150,74.2 156,73.4%22/%3E%3Cpolyline points=%220,80.5 6,79.4 12,78.6 18,78.0 24,77.3 30,76.5 36,75.3 42,73.7 48,71.9 54,70.2 60,68.8 66,68.0 72,68.2 78,69.3 84,71.3 90,73.9 96,76.6 102,79.1 108,80.9 114,81.8 120,81.8 126,80.9 132,79.4 138,77.7 144,76.0 150,74.5 156,73.2%22/%3E%3Cpolyline points=%220,83.2 6,81.6 12,80.4 18,79.5 24,78.7 30,77.8 36,76.7 42,75.5 48,74.3 54,73.3 60,72.8 66,73.2 72,74.4 78,76.4 84,78.9 90,81.6 96,84.0 102,85.7 108,86.5 114,86.3 120,85.1 126,83.2 132,81.0 138,78.9 144,77.1 150,75.7 156,74.8%22/%3E%3Cpolyline points=%220,82.0 6,80.6 12,79.9 18,79.5 24,79.4 30,79.1 36,78.8 42,78.4 48,78.2 54,78.3 60,79.0 66,80.4 72,82.4 78,84.9 84,87.6 90,89.9 96,91.6 102,92.4 108,92.1 114,90.7 120,88.7 126,86.3 132,84.0 138,82.0 144,80.7 150,80.0 156,80.0%22/%3E%3Cpolyline points=%220,80.7 6,80.6 12,81.1 18,82.1 24,83.0 30,83.9 36,84.6 42,85.3 48,86.1 54,87.1 60,88.7 66,90.7 72,93.0 78,95.5 84,97.6 90,99.1 96,99.7 102,99.3 108,97.8 114,95.6 120,93.0 126,90.5 132,88.4 138,87.0 144,86.5 150,86.7 156,87.5%22/%3E%3Cpolyline points=%220,84.0 6,85.7 12,87.9 18,90.2 24,92.3 30,94.1 36,95.5 42,96.7 48,98.0 54,99.3 60,100.9 66,102.8 72,104.6 78,106.2 84,107.2 90,107.4 96,106.5 102,104.8 108,102.3 114,99.4 120,96.6 126,94.3 132,92.8 138,92.3 144,92.6 150,93.7 156,95.2%22/%3E%3Cpolyline points=%220,94.2 6,97.5 12,100.8 18,103.8 24,106.2 30,107.9 36,109.1 42,109.9 48,110.6 54,111.3 60,112.1 66,112.9 72,113.6 78,113.7 84,113.2 90,111.9 96,109.8 102,107.0 108,104.0 114,101.0 120,98.5 126,97.0 132,96.5 138,97.0 144,98.3 150,100.1 156,102.1%22/%3E%3Cpolyline points=%220,109.3 6,113.1 12,116.3 18,118.6 24,120.1 30,120.7 36,120.6 42,120.1 48,119.5 54,118.9 60,118.4 66,117.9 72,117.2 78,116.0 84,114.3 90,112.0 96,109.2 102,106.2 108,103.4 114,101.2 120,99.8 126,99.6 132,100.4 138,102.1 144,104.5 150,106.9 156,109.2%22/%3E%3Cpolyline points=%220,124.4 6,127.1 12,128.9 18,129.5 24,129.1 30,127.8 36,126.0 42,124.0 48,122.0 54,120.3 60,118.8 66,117.4 72,116.0 78,114.3 84,112.3 90,110.0 96,107.6 102,105.5 108,103.9 114,103.1 120,103.5 126,104.9 132,107.2 138,110.1 144,113.1 150,115.8 156,117.9%22/%3E%3Cpolyline points=%220,134.5 6,135.4 12,135.0 18,133.5 24,131.1 30,128.2 36,125.0 42,122.1 48,119.7 54,117.7 60,116.2 66,115.1 72,114.0 78,112.9 84,111.7 90,110.4 96,109.4 102,108.8 108,109.0 114,110.1 120,112.1 126,115.0 132,118.3 138,121.7 144,124.8 150,127.1 156,128.4%22/%3E%3Cpolyline points=%220,138.3 6,137.2 12,135.0 18,131.9 24,128.4 30,124.8 36,121.5 42,119.0 48,117.2 54,116.3 60,115.9 66,116.0 72,116.2 78,116.5 84,116.7 90,116.9 96,117.5 102,118.5 108,120.2 114,122.6 120,125.6 126,129.0 132,132.3 138,135.2 144,137.3 150,138.3 156,138.1%22/%3E%3Cpolyline points=%220,138.2 6,135.8 12,132.7 18,129.2 24,125.7 30,122.8 36,120.7 42,119.7 48,119.6 54,120.4 60,121.8 66,123.5 72,125.1 78,126.6 84,128.0 90,129.3 96,130.8 102,132.6 108,134.8 114,137.4 120,140.2 126,142.9 132,145.1 138,146.4 144,146.6 150,145.7 156,143.7%22/%3E%3Cpolyline points=%220,138.2 6,135.5 12,132.6 18,129.7 24,127.4 30,126.1 36,125.9 42,126.8 48,128.6 54,131.1 60,133.8 66,136.5 72,138.9 78,140.8 84,142.3 90,143.6 96,144.9 102,146.3 108,147.9 114,149.5 120,151.0 126,152.0 132,152.3 138,151.5 144,149.7 150,147.0 156,143.6%22/%3E%3Cpolyline points=%220,141.0 6,138.8 12,136.7 18,135.1 24,134.4 30,134.8 36,136.3 42,138.8 48,141.8 54,145.1 60,148.2 66,150.8 72,152.6 78,153.8 84,154.4 90,154.6 96,154.8 102,154.9 108,155.1 114,155.2 120,155.0 126,154.2 132,152.8 138,150.4 144,147.4 150,143.8 156,140.1%22/%3E%3Cpolyline points=%220,146.5 6,145.0 12,143.9 18,143.6 24,144.3 30,146.0 36,148.5 42,151.7 48,154.9 54,157.9 60,160.1 66,161.5 72,161.9 78,161.6 84,160.6 90,159.4 96,158.2 102,157.0 108,155.9 114,154.9 120,153.5 126,151.8 132,149.6 138,146.9 144,143.8 150,140.7 156,138.1%22/%3E%3Cpolyline points=%220,152.7 6,151.9 12,151.8 18,152.4 24,154.0 30,156.3 36,159.1 42,162.0 48,164.5 54,166.3 60,167.1 66,166.8 72,165.5 78,163.6 84,161.4 90,159.1 96,157.1 102,155.4 108,154.0 114,152.7 120,151.4 126,149.9 132,148.1 138,146.2 144,144.3 150,142.8 156,142.1%22/%3E%3Cpolyline points=%220,158.3 6,158.2 12,158.8 18,160.1 24,162.1 30,164.5 36,166.9 42,169.0 48,170.4 54,170.7 60,169.9 66,168.2 72,165.7 78,163.0 84,160.3 90,157.9 96,156.1 102,154.9 108,154.2 114,153.7 120,153.3 126,152.8 132,152.3 138,151.8 144,151.5 150,151.8 156,152.9%22/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;
+  opacity:.85;
+}
+tr.viz .cell.on[data-v="beskar"]::before{animation:vTopo 26s linear infinite}
+@keyframes vTopo{                                  /* closed path = seamless */
+  0%{transform:translate(0,0)}     25%{transform:translate(1.6px,1.1px)}
+  50%{transform:translate(0,2.2px)} 75%{transform:translate(-1.6px,1.1px)}
+  100%{transform:translate(0,0)}
+}
+.cell.on[data-v="beskar"]::after{
+  inset:0 -100%;
+  background:linear-gradient(108deg,transparent 40%,rgba(255,255,255,.26) 50%,transparent 60%);
+}
+.cell.on[data-v="beskar"]:hover::after{opacity:.85;animation:vSweep 2.4s ease-in-out infinite}
+.cell.on[data-v="beskar"].just::after{opacity:.9;animation:vSweep 1s ease-out 1}
+
+/* ---- GALACTIC: deep nebula with drifting starfield ---- */
+.cell.on[data-v="galactic"]{
+  background:
+    radial-gradient(circle at 28% 22%, rgba(206,88,255,.5), transparent 64%),
+    radial-gradient(circle at 80% 78%, rgba(120,38,210,.45), transparent 58%),
+    linear-gradient(150deg,#3d1266,#1a0630 62%,#120324);
+  border-color:#c05cf5;color:#f4e6ff;
+  box-shadow:0 0 11px rgba(176,76,247,.5);
+}
+.cell.on[data-v="galactic"]::before{
+  inset:-50%;
+  background-image:
+    radial-gradient(1.1px 1.1px at 18% 24%, #fff, transparent 100%),
+    radial-gradient(1px 1px at 68% 18%, #ffeaff, transparent 100%),
+    radial-gradient(1.1px 1.1px at 44% 62%, #fff, transparent 100%),
+    radial-gradient(1px 1px at 86% 84%, #f0d8ff, transparent 100%);
+  background-size:30px 30px;background-repeat:repeat;
+}
+tr.viz .cell.on[data-v="galactic"]::before{animation:vStars 14s linear infinite}
+@keyframes vStars{to{transform:translateY(-30px)}}
+.cell.on[data-v="galactic"]::after{
+  background:radial-gradient(circle at 50% 50%, rgba(228,154,255,.5), transparent 68%);
+}
+.cell.on[data-v="galactic"]:hover::after{opacity:1;animation:vFlare 2.6s ease-in-out infinite}
+@keyframes vFlare{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ---- STELLAR: gold cloudbank with a slowly turning star chart ---- */
 .cell.stl.on{
   background:
-    repeating-radial-gradient(circle at 50% 45%, transparent 0 3px, rgba(255,240,190,.22) 3px 4px),
-    radial-gradient(circle at 35% 28%, rgba(255,232,150,.9), transparent 55%),
-    linear-gradient(140deg,#7a4e10,#c98a1c 42%,#f0c04a 68%,#a06e18);
-  border-color:#e0a627;color:#2a1a04;
-  box-shadow:0 0 12px rgba(224,166,39,.6),inset 0 0 8px rgba(120,74,10,.5);
+    radial-gradient(circle at 70% 76%, rgba(112,66,6,.6), transparent 54%),
+    radial-gradient(circle at 24% 20%, rgba(255,252,232,.95), transparent 50%),
+    radial-gradient(circle at 80% 28%, rgba(255,238,180,.7), transparent 48%),
+    radial-gradient(circle at 46% 58%, rgba(255,226,150,.45), transparent 46%),
+    linear-gradient(147deg,#70460a,#c08a1c 38%,#dfad35 62%,#8a5c10 88%);
+  border-color:#e8b13a;color:#241704;
+  box-shadow:0 0 12px rgba(224,166,39,.55),inset 0 0 9px rgba(92,58,6,.55);
 }
-/* flawless sparkle mirrored onto every variant cell of a flawless droid */
-tr.fl .cell::after{
-  content:'✦';position:absolute;top:-7px;right:-6px;
-  font-size:11px;line-height:1;color:var(--amber);
+.cell.stl.on::before{
+  background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cg fill=%22none%22 stroke=%22%23fff4cf%22 stroke-width=%221.5%22 opacity=%22.95%22%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2214%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2224%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2234%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2246%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2258%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2270%22/%3E%3Cline x1=%2294.0%22 y1=%2280.0%22 x2=%22150.0%22 y2=%2280.0%22/%3E%3Cline x1=%2293.5%22 y1=%2283.6%22 x2=%22147.6%22 y2=%2298.1%22/%3E%3Cline x1=%2292.1%22 y1=%2287.0%22 x2=%22140.6%22 y2=%22115.0%22/%3E%3Cline x1=%2289.9%22 y1=%2289.9%22 x2=%22129.5%22 y2=%22129.5%22/%3E%3Cline x1=%2287.0%22 y1=%2292.1%22 x2=%22115.0%22 y2=%22140.6%22/%3E%3Cline x1=%2283.6%22 y1=%2293.5%22 x2=%2298.1%22 y2=%22147.6%22/%3E%3Cline x1=%2280.0%22 y1=%2294.0%22 x2=%2280.0%22 y2=%22150.0%22/%3E%3Cline x1=%2276.4%22 y1=%2293.5%22 x2=%2261.9%22 y2=%22147.6%22/%3E%3Cline x1=%2273.0%22 y1=%2292.1%22 x2=%2245.0%22 y2=%22140.6%22/%3E%3Cline x1=%2270.1%22 y1=%2289.9%22 x2=%2230.5%22 y2=%22129.5%22/%3E%3Cline x1=%2267.9%22 y1=%2287.0%22 x2=%2219.4%22 y2=%22115.0%22/%3E%3Cline x1=%2266.5%22 y1=%2283.6%22 x2=%2212.4%22 y2=%2298.1%22/%3E%3Cline x1=%2266.0%22 y1=%2280.0%22 x2=%2210.0%22 y2=%2280.0%22/%3E%3Cline x1=%2266.5%22 y1=%2276.4%22 x2=%2212.4%22 y2=%2261.9%22/%3E%3Cline x1=%2267.9%22 y1=%2273.0%22 x2=%2219.4%22 y2=%2245.0%22/%3E%3Cline x1=%2270.1%22 y1=%2270.1%22 x2=%2230.5%22 y2=%2230.5%22/%3E%3Cline x1=%2273.0%22 y1=%2267.9%22 x2=%2245.0%22 y2=%2219.4%22/%3E%3Cline x1=%2276.4%22 y1=%2266.5%22 x2=%2261.9%22 y2=%2212.4%22/%3E%3Cline x1=%2280.0%22 y1=%2266.0%22 x2=%2280.0%22 y2=%2210.0%22/%3E%3Cline x1=%2283.6%22 y1=%2266.5%22 x2=%2298.1%22 y2=%2212.4%22/%3E%3Cline x1=%2287.0%22 y1=%2267.9%22 x2=%22115.0%22 y2=%2219.4%22/%3E%3Cline x1=%2289.9%22 y1=%2270.1%22 x2=%22129.5%22 y2=%2230.5%22/%3E%3Cline x1=%2292.1%22 y1=%2273.0%22 x2=%22140.6%22 y2=%2245.0%22/%3E%3Cline x1=%2293.5%22 y1=%2276.4%22 x2=%22147.6%22 y2=%2261.9%22/%3E%3Cline x1=%22150.0%22 y1=%2280.0%22 x2=%22156.0%22 y2=%2280.0%22/%3E%3Cline x1=%22149.4%22 y1=%2289.1%22 x2=%22155.3%22 y2=%2289.9%22/%3E%3Cline x1=%22147.6%22 y1=%2298.1%22 x2=%22153.4%22 y2=%2299.7%22/%3E%3Cline x1=%22144.7%22 y1=%22106.8%22 x2=%22150.2%22 y2=%22109.1%22/%3E%3Cline x1=%22140.6%22 y1=%22115.0%22 x2=%22145.8%22 y2=%22118.0%22/%3E%3Cline x1=%22135.5%22 y1=%22122.6%22 x2=%22140.3%22 y2=%22126.3%22/%3E%3Cline x1=%22129.5%22 y1=%22129.5%22 x2=%22133.7%22 y2=%22133.7%22/%3E%3Cline x1=%22122.6%22 y1=%22135.5%22 x2=%22126.3%22 y2=%22140.3%22/%3E%3Cline x1=%22115.0%22 y1=%22140.6%22 x2=%22118.0%22 y2=%22145.8%22/%3E%3Cline x1=%22106.8%22 y1=%22144.7%22 x2=%22109.1%22 y2=%22150.2%22/%3E%3Cline x1=%2298.1%22 y1=%22147.6%22 x2=%2299.7%22 y2=%22153.4%22/%3E%3Cline x1=%2289.1%22 y1=%22149.4%22 x2=%2289.9%22 y2=%22155.3%22/%3E%3Cline x1=%2280.0%22 y1=%22150.0%22 x2=%2280.0%22 y2=%22156.0%22/%3E%3Cline x1=%2270.9%22 y1=%22149.4%22 x2=%2270.1%22 y2=%22155.3%22/%3E%3Cline x1=%2261.9%22 y1=%22147.6%22 x2=%2260.3%22 y2=%22153.4%22/%3E%3Cline x1=%2253.2%22 y1=%22144.7%22 x2=%2250.9%22 y2=%22150.2%22/%3E%3Cline x1=%2245.0%22 y1=%22140.6%22 x2=%2242.0%22 y2=%22145.8%22/%3E%3Cline x1=%2237.4%22 y1=%22135.5%22 x2=%2233.7%22 y2=%22140.3%22/%3E%3Cline x1=%2230.5%22 y1=%22129.5%22 x2=%2226.3%22 y2=%22133.7%22/%3E%3Cline x1=%2224.5%22 y1=%22122.6%22 x2=%2219.7%22 y2=%22126.3%22/%3E%3Cline x1=%2219.4%22 y1=%22115.0%22 x2=%2214.2%22 y2=%22118.0%22/%3E%3Cline x1=%2215.3%22 y1=%22106.8%22 x2=%229.8%22 y2=%22109.1%22/%3E%3Cline x1=%2212.4%22 y1=%2298.1%22 x2=%226.6%22 y2=%2299.7%22/%3E%3Cline x1=%2210.6%22 y1=%2289.1%22 x2=%224.7%22 y2=%2289.9%22/%3E%3Cline x1=%2210.0%22 y1=%2280.0%22 x2=%224.0%22 y2=%2280.0%22/%3E%3Cline x1=%2210.6%22 y1=%2270.9%22 x2=%224.7%22 y2=%2270.1%22/%3E%3Cline x1=%2212.4%22 y1=%2261.9%22 x2=%226.6%22 y2=%2260.3%22/%3E%3Cline x1=%2215.3%22 y1=%2253.2%22 x2=%229.8%22 y2=%2250.9%22/%3E%3Cline x1=%2219.4%22 y1=%2245.0%22 x2=%2214.2%22 y2=%2242.0%22/%3E%3Cline x1=%2224.5%22 y1=%2237.4%22 x2=%2219.7%22 y2=%2233.7%22/%3E%3Cline x1=%2230.5%22 y1=%2230.5%22 x2=%2226.3%22 y2=%2226.3%22/%3E%3Cline x1=%2237.4%22 y1=%2224.5%22 x2=%2233.7%22 y2=%2219.7%22/%3E%3Cline x1=%2245.0%22 y1=%2219.4%22 x2=%2242.0%22 y2=%2214.2%22/%3E%3Cline x1=%2253.2%22 y1=%2215.3%22 x2=%2250.9%22 y2=%229.8%22/%3E%3Cline x1=%2261.9%22 y1=%2212.4%22 x2=%2260.3%22 y2=%226.6%22/%3E%3Cline x1=%2270.9%22 y1=%2210.6%22 x2=%2270.1%22 y2=%224.7%22/%3E%3Cline x1=%2280.0%22 y1=%2210.0%22 x2=%2280.0%22 y2=%224.0%22/%3E%3Cline x1=%2289.1%22 y1=%2210.6%22 x2=%2289.9%22 y2=%224.7%22/%3E%3Cline x1=%2298.1%22 y1=%2212.4%22 x2=%2299.7%22 y2=%226.6%22/%3E%3Cline x1=%22106.8%22 y1=%2215.3%22 x2=%22109.1%22 y2=%229.8%22/%3E%3Cline x1=%22115.0%22 y1=%2219.4%22 x2=%22118.0%22 y2=%2214.2%22/%3E%3Cline x1=%22122.6%22 y1=%2224.5%22 x2=%22126.3%22 y2=%2219.7%22/%3E%3Cline x1=%22129.5%22 y1=%2230.5%22 x2=%22133.7%22 y2=%2226.3%22/%3E%3Cline x1=%22135.5%22 y1=%2237.4%22 x2=%22140.3%22 y2=%2233.7%22/%3E%3Cline x1=%22140.6%22 y1=%2245.0%22 x2=%22145.8%22 y2=%2242.0%22/%3E%3Cline x1=%22144.7%22 y1=%2253.2%22 x2=%22150.2%22 y2=%2250.9%22/%3E%3Cline x1=%22147.6%22 y1=%2261.9%22 x2=%22153.4%22 y2=%2260.3%22/%3E%3Cline x1=%22149.4%22 y1=%2270.9%22 x2=%22155.3%22 y2=%2270.1%22/%3E%3C/g%3E%3Cg fill=%22%23fffdf2%22 opacity=%22.95%22%3E%3Cg transform=%22translate(80,10)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(133,80)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(80,150)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(27,80)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(42,42)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(118,118)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") center/60% 60% no-repeat;
+  opacity:.58;
+}
+tr.viz .cell.stl.on::before{animation:vSpin 48s linear infinite}
+@keyframes vSpin{to{transform:rotate(360deg)}}
+.cell.stl.on::after{
+  background:
+    radial-gradient(1.5px 1.5px at 26% 24%, #fffdf0, transparent 100%),
+    radial-gradient(1.3px 1.3px at 76% 66%, #fff6d8, transparent 100%),
+    radial-gradient(1.2px 1.2px at 62% 22%, #fffdf0, transparent 100%),
+    radial-gradient(circle at 38% 32%, rgba(255,253,238,.6), transparent 54%),
+    radial-gradient(circle at 72% 70%, rgba(255,240,196,.45), transparent 50%);
+}
+.cell.stl.on:hover::after{opacity:1;animation:vFlare 2.6s ease-in-out infinite}
+.cell.stl.on:hover::before{animation-duration:18s;opacity:.6}
+
+/* hover: brighter rim on everything animated */
+@media (hover:hover){
+  tr.viz .cell.rbw.on:hover{animation-duration:2.4s;box-shadow:0 0 16px rgba(224,93,240,.85)}
+  .cell.on[data-v="beskar"]:hover{box-shadow:0 0 16px rgba(210,220,236,.7)}
+  .cell.on[data-v="galactic"]:hover{box-shadow:0 0 18px rgba(186,86,255,.85)}
+  .cell.stl.on:hover{box-shadow:0 0 18px rgba(240,186,60,.9),inset 0 0 9px rgba(92,58,6,.55)}
+  .cell.on[data-v="gold"]:hover{box-shadow:0 0 16px rgba(245,200,70,.8)}
+  .cell.on[data-v="diamond"]:hover{box-shadow:0 0 16px rgba(70,220,250,.8)}
+  tr.viz .cell.on[data-v="galactic"]:hover::before{animation-duration:4.5s}
+}
+@media (prefers-reduced-motion:reduce){
+  .cell,.cell::before,.cell::after,.chip,.chip::before{animation:none!important}
+}
+
+
+/* stellar: gold cloud/fog spilling past the tile edge (drawn on the cell's
+   container, since the cell itself clips) */
+td.vc:has(.cell.stl.on){overflow:visible}
+td.vc:has(.cell.stl.on)::before{
+  content:'';position:absolute;left:50%;top:50%;width:54px;height:54px;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,
+    rgba(255,226,150,.42) 0%, rgba(240,182,60,.2) 44%, rgba(200,140,30,.08) 64%, transparent 76%);
+  filter:blur(3.5px);
+}
+tr.viz td.vc:has(.cell.stl.on)::before{animation:vFog 9s ease-in-out infinite}
+@keyframes vFog{0%,100%{opacity:.75;transform:translate(-50%,-50%) scale(1)}
+                50%{opacity:1;transform:translate(-50%,-50%) scale(1.09)}}
+.cell{z-index:1}
+@media(max-width:600px){ td.vc:has(.cell.stl.on)::before{width:48px;height:48px} }
+
+/* flawless sparkle — on the cell's container, so the cell can clip its own layers.
+   Anchored to the cell centre so it lands on the corner whatever the column width. */
+tr.fl td.vc::after{
+  content:'✦';position:absolute;top:-4px;left:calc(50% + 9px);
+  font-size:11px;line-height:1;color:#fff;z-index:3;
   text-shadow:0 0 2px #000,0 0 3px #000,0 0 6px rgba(0,0,0,.9);
 }
-.fcell{--vt:var(--amber);border-radius:50%}
-.fcell.on{background:var(--amber);color:#150b24;border-color:var(--amber);box-shadow:0 0 10px rgba(255,182,39,.5)}
+@media(max-width:600px){
+  tr.fl td.vc::after{left:calc(50% + 7px);top:-3px}
+}
+.fcell{--vt:#ffffff;border-radius:50%}
+.fcell.on{background:#fff;color:#141822;border-color:#fff;box-shadow:0 0 11px rgba(255,255,255,.6)}
 td.na{color:var(--ink-soft);opacity:.35;font-family:'Barlow Condensed',sans-serif;font-size:13px}
 
 /* quick-fill */
@@ -295,8 +466,16 @@ td.na{color:var(--ink-soft);opacity:.35;font-family:'Barlow Condensed',sans-seri
 .fuseRow .plus{color:var(--ink-soft);font-weight:700}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:1000px){
+  thead th{font-size:12.5px;letter-spacing:0}
+  thead th.name,td.name{width:190px}
+}
+@media(max-width:820px){
+  thead th{font-size:11.5px}
+  thead th.name,td.name{width:150px}
+}
 @media(max-width:600px){
-  td.name,thead th.name{min-width:140px}
+  td.name,thead th.name{width:150px}
   .cell,.fcell{width:27px;height:27px;margin:3px 2px}
   h1 em{letter-spacing:.2em}
 }
@@ -380,10 +559,10 @@ const RAR = {
 };
 const VARIANTS = [
   {key:'default', label:'Default',  tone:'#ff8a3c'},
-  {key:'gold',    label:'Gold',     tone:'#ffd23f'},
+  {key:'gold',    label:'Gold',     tone:'#f0be2e'},
   {key:'diamond', label:'Diamond',  tone:'#35d6f5'},
   {key:'rainbow', label:'Rainbow',  tone:'#e05df0', rbw:true},
-  {key:'beskar',  label:'Beskar',   tone:'#c9ced8'},
+  {key:'beskar',  label:'Beskar',   tone:'#b9c2d1'},
   {key:'galactic',label:'Galactic', tone:'#b44ef7'},
   {key:'stellar', label:'Stellar',  tone:'#e0a627', stl:true},
 ];
@@ -527,7 +706,7 @@ for(const r of order){
         <tr>
           <th class="name">Droid</th>
           ${VARIANTS.map(v=>`<th ${v.rbw?'class="rbwh"':v.stl?'class="stlh"':''} style="--vt:${v.tone}">${v.label}</th>`).join('')}
-          <th style="--vt:var(--amber)"><span class="fstar">✦</span>Flawless</th>
+          <th style="--vt:#ffffff"><span class="fstar">✦</span>Flawless</th>
         </tr>
         <tr class="qrow">
           <td></td>
@@ -544,10 +723,10 @@ for(const r of order){
     let tds=`<td class="name"><span class="nm">${d.name}</span>${d.cls?(d.cls==='Protocol'?`<span class="cls proto"><svg class="pico" viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1l9.5 5.5v13L12 25 2.5 19.5v-13z" fill="currentColor"/><rect x="8.6" y="8.2" width="6.8" height="10" rx="1.4" fill="#2a1d05"/><rect x="10" y="10" width="4" height="2.8" rx=".6" fill="currentColor"/><rect x="10" y="14.2" width="4" height="1.5" rx=".5" fill="currentColor"/></svg>Protocol</span>`:`<span class="cls">${d.cls}</span>`):''}${d.fuse?`<button class="fusetag" data-id="${d.id}" aria-expanded="false" title="Show fusion recipe"><img class="fico" src="data:image/png;base64,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" alt="">Fusion <span class="car">▾</span></button>`:''}</td>`;
     for(const v of VARIANTS){
       if(r==='iconic'&&v.key!=='default'){ tds+=`<td class="na">—</td>`; continue; }
-      tds+=`<td><button class="cell ${v.rbw?'rbw':''}${v.stl?'stl':''}" data-id="${d.id}" data-v="${v.key}" style="--vt:${v.tone}" role="switch" aria-checked="false" aria-label="${d.name} ${v.label}">✓</button></td>`;
+      tds+=`<td class="vc"><button class="cell ${v.rbw?'rbw':''}${v.stl?'stl':''}" data-id="${d.id}" data-v="${v.key}" style="--vt:${v.tone}" role="switch" aria-checked="false" aria-label="${d.name} ${v.label}"><i>✓</i></button></td>`;
     }
     tds += r==='iconic' ? `<td class="na">—</td>`
-      : `<td><button class="fcell" data-id="${d.id}" role="switch" aria-checked="false" aria-label="${d.name} Flawless">✦</button></td>`;
+      : `<td><button class="fcell" data-id="${d.id}" role="switch" aria-checked="false" aria-label="${d.name} Flawless"><i>✦</i></button></td>`;
     tr.innerHTML=tds;
     tb.appendChild(tr);
     if(d.fuse){
@@ -573,6 +752,7 @@ for(const v of VARIANTS){
   const denom = v.key==='default' ? D.length : STD.length;
   const el=document.createElement('span');
   el.className='chip'+(v.rbw?' rbw':'')+(v.stl?' stl':'');
+  el.dataset.v=v.key;
   el.style.setProperty('--vt',v.tone);
   el.innerHTML=`<span class="lb">${v.label}</span><b>0/${denom}</b>`;
   chipHost.appendChild(el);
@@ -582,7 +762,10 @@ for(const v of VARIANTS){
 /* ---------------- interactions ---------------- */
 document.addEventListener('click',e=>{
   const c=e.target.closest('.cell');
-  if(c){ const on=!isOn(c.dataset.id,c.dataset.v); setOn(c.dataset.id,c.dataset.v,on); bumpChanges(1); save(); paint(); return; }
+  if(c){ const on=!isOn(c.dataset.id,c.dataset.v); setOn(c.dataset.id,c.dataset.v,on);
+    if(on){ c.classList.remove('just'); void c.offsetWidth; c.classList.add('just');
+            setTimeout(()=>c.classList.remove('just'),1100); }
+    bumpChanges(1); save(); paint(); return; }
   const f=e.target.closest('.fcell');
   if(f){ const id=f.dataset.id; if(state.f[id]) delete state.f[id]; else state.f[id]=1; bumpChanges(1); save(); paint(); return; }
   const ft=e.target.closest('.fusetag');
@@ -647,6 +830,20 @@ function paint(){
     q.classList.toggle('full',full);
   }
 }
+
+/* ---- only animate rows that are actually on screen ----
+   Without this, every checked cell animates at once and the page crawls. */
+(function(){
+  const rows=document.querySelectorAll('#sections tbody tr');
+  if(!('IntersectionObserver' in window)){
+    rows.forEach(r=>r.classList.add('viz'));   /* old browser: just run them all */
+    return;
+  }
+  const obs=new IntersectionObserver(entries=>{
+    for(const e of entries) e.target.classList.toggle('viz', e.isIntersecting);
+  },{rootMargin:'60px 0px'});
+  rows.forEach(r=>obs.observe(r));
+})();
 
 /* ---------------- backup, alerts & first-run ---------------- */
 const ioNote=document.getElementById('ioNote');
