@@ -190,7 +190,7 @@ section.rar::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;
 .rhead{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:10px;position:relative;z-index:2}
 .rhead h2{font-family:'Bungee',cursive;font-size:17px;margin:0;color:var(--rc);letter-spacing:.02em}
 .rhead .rcount{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;letter-spacing:.05em;color:var(--ink-soft)}
-.tblwrap{overflow-x:auto;position:relative;z-index:2}
+.tblwrap{overflow-x:auto;overflow-y:hidden;padding:12px 0;margin:-12px 0;position:relative;z-index:2}
 table{border-collapse:separate;border-spacing:0 5px;width:100%;min-width:640px;table-layout:fixed}
 th,td{padding:0}
 thead th{
@@ -216,16 +216,19 @@ tr.done .nm{color:var(--rc)}
 .cell,.fcell{
   position:relative;
   width:30px;height:30px;border-radius:8px;cursor:pointer;padding:0;
-  border:1.5px solid color-mix(in srgb, var(--vt) 55%, transparent);
+  border:0;
   background:color-mix(in srgb, var(--vt) 7%, transparent);
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--vt) 55%, transparent);
   color:transparent;font-size:15px;line-height:1;font-weight:700;
-  transition:background-color .12s,color .12s,transform .08s;
+  transition:background-color .12s,color .12s,transform .1s,box-shadow .15s;
   overflow:hidden;
   margin:3px 4px;font-family:'Barlow Condensed',sans-serif;
 }
-.cell:hover,.fcell:hover{transform:scale(1.08)}
+.cell:hover,.fcell:hover{transform:scale(1.06)}
 .cell:focus-visible,.fcell:focus-visible,.qa:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
-.cell.on{background:var(--vt);color:#150b24;border-color:var(--vt);box-shadow:0 0 10px color-mix(in srgb, var(--vt) 55%, transparent)}
+.cell.on{background:var(--vt);color:#150b24;
+  box-shadow:inset 0 0 0 1.5px var(--ring,var(--vt)),
+             0 0 var(--gs,10px) var(--glow,color-mix(in srgb, var(--vt) 55%, transparent))}
 /* ============ variant materials ============
    Built from the in-game Droidex plus real damascus reference.
    Patterns are inline SVG (rasterised once); all motion is transform/opacity
@@ -236,24 +239,20 @@ tr.done .nm{color:var(--rc)}
   content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
 }
 .cell.on::after{opacity:0;transition:opacity .2s}
-.cell>i,.fcell>i{position:relative;z-index:4;font-style:normal}
+.cell>i,.fcell>i{position:absolute;inset:0;display:grid;place-items:center;z-index:4;font-style:normal;line-height:1}
 
-/* ---- GOLD: struck metal, not flat yellow ---- */
+/* ---- GOLD: rich gold, no shimmer ---- */
 .cell.on[data-v="gold"]{
   background:linear-gradient(150deg,#ffd964,#f0b820 55%,#d99a15);
-  border-color:#f0be2e;color:#241a02;
-  box-shadow:0 0 10px rgba(240,190,46,.5);
+  --ring:#f0be2e;--glow:rgba(240,190,46,.5);color:#241a02;
 }
 
-@keyframes vSweep{0%{transform:translateX(-34%)}45%,100%{transform:translateX(34%)}}
-
-/* ---- DIAMOND: cut gem facets ---- */
+/* ---- DIAMOND: cut facets that flex, sparkles that pop on hover ---- */
 .cell.on[data-v="diamond"]{
   background:
     radial-gradient(circle at 34% 28%, rgba(176,240,252,.45), transparent 60%),
     linear-gradient(150deg,#42cfe6,#1aa8c6 55%,#127f99);
-  border-color:#35d6f5;color:#0c1420;
-  box-shadow:0 0 10px rgba(53,214,245,.5);
+  --ring:#35d6f5;--glow:rgba(53,214,245,.5);color:#0c1420;
 }
 .cell.on[data-v="diamond"]::before{
   inset:-40%;
@@ -262,40 +261,50 @@ tr.done .nm{color:var(--rc)}
 }
 .cell.on[data-v="diamond"]::after{
   background:
-    radial-gradient(1.6px 1.6px at 30% 34%, #fff, transparent 100%),
-    radial-gradient(1.4px 1.4px at 74% 62%, #fff, transparent 100%),
-    radial-gradient(1.2px 1.2px at 52% 20%, #fff, transparent 100%);
-  opacity:.5;
+    radial-gradient(2px 2px at 28% 30%, #fff, transparent 100%),
+    radial-gradient(1.7px 1.7px at 74% 60%, #fff, transparent 100%),
+    radial-gradient(1.5px 1.5px at 52% 16%, #eafcff, transparent 100%),
+    radial-gradient(1.6px 1.6px at 18% 74%, #fff, transparent 100%),
+    radial-gradient(1.7px 1.7px at 84% 26%, #fff, transparent 100%);
 }
-@keyframes vTwinkle{0%,100%{opacity:.3}50%{opacity:1}}
-.cell.on[data-v="diamond"]:hover::after{animation:vTwinkle 1.4s ease-in-out infinite}
+.cell.on[data-v="diamond"]:hover::after{opacity:1;animation:vTwinkle 1.5s ease-in-out infinite}
+.cell.on[data-v="diamond"]:hover::before{opacity:.58;animation:vGem 3s ease-in-out infinite}
+@keyframes vTwinkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes vGem{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.07) rotate(2deg)}}
 
-/* ---- RAINBOW: spectrum cycle under faint sharp facet lines ---- */
+/* ---- RAINBOW: gentle idle sway, real colour flow on hover ---- */
 .cell.rbw.on{
   background:linear-gradient(125deg,#ff3b3b,#ff9f2e,#ffe93c,#4fe08a,#3cc8ff,#8f5cf6,#ff3b3b);
-  border-color:#e05df0;color:#1b0b22;
-  box-shadow:0 0 10px rgba(224,93,240,.5);
+  --ring:#e05df0;--glow:rgba(224,93,240,.5);color:#1b0b22;
 }
-tr.viz .cell.rbw.on{animation:vHue 11s ease-in-out infinite alternate}
-@keyframes vHue{from{filter:hue-rotate(-10deg)}to{filter:hue-rotate(10deg)}}
-.cell.rbw.on::after{
-  inset:0 -100%;
-  background:linear-gradient(90deg,#ff2d2d,#ffd21f,#2ef08a,#1fc4ff,#a13cff,#ff2d2d);
-  background-size:33.333% 100%;background-repeat:repeat-x;
-}
-.cell.rbw.on:hover::after{opacity:.22;animation:vFlow 4.2s linear infinite}
-@keyframes vFlow{from{transform:translateX(0)}to{transform:translateX(33.333%)}}
+tr.viz .cell.rbw.on:hover{animation:vHueBig 3.4s ease-in-out infinite alternate}
+@keyframes vHueBig{from{filter:hue-rotate(-46deg) saturate(1.15)}to{filter:hue-rotate(46deg) saturate(1.15)}}
 .cell.rbw.on::before{
   inset:-30%;
   background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cg fill=%22none%22 stroke=%22%23ffffff%22 stroke-width=%221%22 opacity=%22.5%22%3E%3Cpolygon points=%22-28,-25 6,-21 -34,8%22/%3E%3Cpolygon points=%226,-21 5,-7 -34,8%22/%3E%3Cpolygon points=%226,-21 35,-22 5,-7%22/%3E%3Cpolygon points=%2235,-22 36,-7 5,-7%22/%3E%3Cpolygon points=%2235,-22 51,-31 36,-7%22/%3E%3Cpolygon points=%2251,-31 62,-7 36,-7%22/%3E%3Cpolygon points=%2251,-31 99,-27 62,-7%22/%3E%3Cpolygon points=%2299,-27 80,7 62,-7%22/%3E%3Cpolygon points=%2299,-27 128,-38 80,7%22/%3E%3Cpolygon points=%22128,-38 114,-6 80,7%22/%3E%3Cpolygon points=%22128,-38 149,-35 114,-6%22/%3E%3Cpolygon points=%22149,-35 160,7 114,-6%22/%3E%3Cpolygon points=%22149,-35 181,-29 160,7%22/%3E%3Cpolygon points=%22181,-29 176,9 160,7%22/%3E%3Cpolygon points=%22181,-29 200,-36 176,9%22/%3E%3Cpolygon points=%22200,-36 211,4 176,9%22/%3E%3Cpolygon points=%22-34,8 5,-7 -36,39%22/%3E%3Cpolygon points=%225,-7 4,39 -36,39%22/%3E%3Cpolygon points=%225,-7 36,-7 4,39%22/%3E%3Cpolygon points=%2236,-7 38,26 4,39%22/%3E%3Cpolygon points=%2236,-7 62,-7 38,26%22/%3E%3Cpolygon points=%2262,-7 57,23 38,26%22/%3E%3Cpolygon points=%2262,-7 80,7 57,23%22/%3E%3Cpolygon points=%2280,7 83,21 57,23%22/%3E%3Cpolygon points=%2280,7 114,-6 83,21%22/%3E%3Cpolygon points=%22114,-6 116,32 83,21%22/%3E%3Cpolygon points=%22114,-6 160,7 116,32%22/%3E%3Cpolygon points=%22160,7 140,34 116,32%22/%3E%3Cpolygon points=%22160,7 176,9 140,34%22/%3E%3Cpolygon points=%22176,9 177,26 140,34%22/%3E%3Cpolygon points=%22176,9 211,4 177,26%22/%3E%3Cpolygon points=%22211,4 216,30 177,26%22/%3E%3Cpolygon points=%22-36,39 4,39 -34,60%22/%3E%3Cpolygon points=%224,39 4,51 -34,60%22/%3E%3Cpolygon points=%224,39 38,26 4,51%22/%3E%3Cpolygon points=%2238,26 40,50 4,51%22/%3E%3Cpolygon points=%2238,26 57,23 40,50%22/%3E%3Cpolygon points=%2257,23 65,67 40,50%22/%3E%3Cpolygon points=%2257,23 83,21 65,67%22/%3E%3Cpolygon points=%2283,21 80,66 65,67%22/%3E%3Cpolygon points=%2283,21 116,32 80,66%22/%3E%3Cpolygon points=%22116,32 117,62 80,66%22/%3E%3Cpolygon points=%22116,32 140,34 117,62%22/%3E%3Cpolygon points=%22140,34 140,51 117,62%22/%3E%3Cpolygon points=%22140,34 177,26 140,51%22/%3E%3Cpolygon points=%22177,26 174,69 140,51%22/%3E%3Cpolygon points=%22177,26 216,30 174,69%22/%3E%3Cpolygon points=%22216,30 204,65 174,69%22/%3E%3Cpolygon points=%22-34,60 4,51 -21,99%22/%3E%3Cpolygon points=%224,51 -3,87 -21,99%22/%3E%3Cpolygon points=%224,51 40,50 -3,87%22/%3E%3Cpolygon points=%2240,50 30,96 -3,87%22/%3E%3Cpolygon points=%2240,50 65,67 30,96%22/%3E%3Cpolygon points=%2265,67 52,95 30,96%22/%3E%3Cpolygon points=%2265,67 80,66 52,95%22/%3E%3Cpolygon points=%2280,66 96,97 52,95%22/%3E%3Cpolygon points=%2280,66 117,62 96,97%22/%3E%3Cpolygon points=%22117,62 111,99 96,97%22/%3E%3Cpolygon points=%22117,62 140,51 111,99%22/%3E%3Cpolygon points=%22140,51 142,87 111,99%22/%3E%3Cpolygon points=%22140,51 174,69 142,87%22/%3E%3Cpolygon points=%22174,69 182,98 142,87%22/%3E%3Cpolygon points=%22174,69 204,65 182,98%22/%3E%3Cpolygon points=%22204,65 207,98 182,98%22/%3E%3Cpolygon points=%22-21,99 -3,87 -29,116%22/%3E%3Cpolygon points=%22-3,87 -4,114 -29,116%22/%3E%3Cpolygon points=%22-3,87 30,96 -4,114%22/%3E%3Cpolygon points=%2230,96 22,113 -4,114%22/%3E%3Cpolygon points=%2230,96 52,95 22,113%22/%3E%3Cpolygon points=%2252,95 64,130 22,113%22/%3E%3Cpolygon points=%2252,95 96,97 64,130%22/%3E%3Cpolygon points=%2296,97 83,111 64,130%22/%3E%3Cpolygon points=%2296,97 111,99 83,111%22/%3E%3Cpolygon points=%22111,99 130,121 83,111%22/%3E%3Cpolygon points=%22111,99 142,87 130,121%22/%3E%3Cpolygon points=%22142,87 148,115 130,121%22/%3E%3Cpolygon points=%22142,87 182,98 148,115%22/%3E%3Cpolygon points=%22182,98 182,127 148,115%22/%3E%3Cpolygon points=%22182,98 207,98 182,127%22/%3E%3Cpolygon points=%22207,98 209,118 182,127%22/%3E%3Cpolygon points=%22-29,116 -4,114 -39,158%22/%3E%3Cpolygon points=%22-4,114 -9,150 -39,158%22/%3E%3Cpolygon points=%22-4,114 22,113 -9,150%22/%3E%3Cpolygon points=%2222,113 37,143 -9,150%22/%3E%3Cpolygon points=%2222,113 64,130 37,143%22/%3E%3Cpolygon points=%2264,130 65,159 37,143%22/%3E%3Cpolygon points=%2264,130 83,111 65,159%22/%3E%3Cpolygon points=%2283,111 93,156 65,159%22/%3E%3Cpolygon points=%2283,111 130,121 93,156%22/%3E%3Cpolygon points=%22130,121 112,149 93,156%22/%3E%3Cpolygon points=%22130,121 148,115 112,149%22/%3E%3Cpolygon points=%22148,115 143,157 112,149%22/%3E%3Cpolygon points=%22148,115 182,127 143,157%22/%3E%3Cpolygon points=%22182,127 176,149 143,157%22/%3E%3Cpolygon points=%22182,127 209,118 176,149%22/%3E%3Cpolygon points=%22209,118 220,157 176,149%22/%3E%3Cpolygon points=%22-39,158 -9,150 -20,179%22/%3E%3Cpolygon points=%22-9,150 0,185 -20,179%22/%3E%3Cpolygon points=%22-9,150 37,143 0,185%22/%3E%3Cpolygon points=%2237,143 30,176 0,185%22/%3E%3Cpolygon points=%2237,143 65,159 30,176%22/%3E%3Cpolygon points=%2265,159 58,173 30,176%22/%3E%3Cpolygon points=%2265,159 93,156 58,173%22/%3E%3Cpolygon points=%2293,156 88,190 58,173%22/%3E%3Cpolygon points=%2293,156 112,149 88,190%22/%3E%3Cpolygon points=%22112,149 129,183 88,190%22/%3E%3Cpolygon points=%22112,149 143,157 129,183%22/%3E%3Cpolygon points=%22143,157 150,177 129,183%22/%3E%3Cpolygon points=%22143,157 176,149 150,177%22/%3E%3Cpolygon points=%22176,149 172,175 150,177%22/%3E%3Cpolygon points=%22176,149 220,157 172,175%22/%3E%3Cpolygon points=%22220,157 216,187 172,175%22/%3E%3Cpolygon points=%22-20,179 0,185 -33,216%22/%3E%3Cpolygon points=%220,185 5,214 -33,216%22/%3E%3Cpolygon points=%220,185 30,176 5,214%22/%3E%3Cpolygon points=%2230,176 33,215 5,214%22/%3E%3Cpolygon points=%2230,176 58,173 33,215%22/%3E%3Cpolygon points=%2258,173 57,214 33,215%22/%3E%3Cpolygon points=%2258,173 88,190 57,214%22/%3E%3Cpolygon points=%2288,190 86,210 57,214%22/%3E%3Cpolygon points=%2288,190 129,183 86,210%22/%3E%3Cpolygon points=%22129,183 125,214 86,210%22/%3E%3Cpolygon points=%22129,183 150,177 125,214%22/%3E%3Cpolygon points=%22150,177 146,219 125,214%22/%3E%3Cpolygon points=%22150,177 172,175 146,219%22/%3E%3Cpolygon points=%22172,175 183,212 146,219%22/%3E%3Cpolygon points=%22172,175 216,187 183,212%22/%3E%3Cpolygon points=%22216,187 200,211 183,212%22/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;
   opacity:.24;
 }
+tr.viz .cell.rbw.on::before{animation:vDriftSlow 20s linear infinite}
+@keyframes vDriftSlow{
+  0%{transform:translate(0,0)}      25%{transform:translate(1.4px,1px)}
+  50%{transform:translate(0,2px)}   75%{transform:translate(-1.4px,1px)}
+  100%{transform:translate(0,0)}
+}
+.cell.rbw.on::after{
+  inset:-120%;
+  background:repeating-linear-gradient(125deg,
+    #ff2d2d 0px,#ffd21f 6px,#2ef08a 12px,#1fc4ff 18px,#a13cff 24px,#ff2d2d 30px);
+}
+.cell.rbw.on:hover::after{opacity:.5;animation:vFlow 2.4s linear infinite}
+@keyframes vFlow{                      /* one 30px period along the 125deg axis */
+  from{transform:translate(0,0)}
+  to{transform:translate(24.575px,17.207px)}
+}
 
-/* ---- BESKAR: dark silver, topographic damascus grain, metal shimmer ---- */
+/* ---- BESKAR: damascus grain, light shimmer on hover / on check ---- */
 .cell.on[data-v="beskar"]{
   background:linear-gradient(150deg,#666d78,#3b414a 46%,#262b32 78%,#4a5059);
-  border-color:#b9c2d1;color:#f2f5fa;
-  box-shadow:0 0 10px rgba(185,194,209,.4);
+  --ring:#b9c2d1;--glow:rgba(185,194,209,.4);color:#f2f5fa;
 }
 .cell.on[data-v="beskar"]::before{
   inset:-45%;
@@ -303,8 +312,8 @@ tr.viz .cell.rbw.on{animation:vHue 11s ease-in-out infinite alternate}
   opacity:.85;
 }
 tr.viz .cell.on[data-v="beskar"]::before{animation:vTopo 26s linear infinite}
-@keyframes vTopo{                                  /* closed path = seamless */
-  0%{transform:translate(0,0)}     25%{transform:translate(1.6px,1.1px)}
+@keyframes vTopo{
+  0%{transform:translate(0,0)}      25%{transform:translate(1.6px,1.1px)}
   50%{transform:translate(0,2.2px)} 75%{transform:translate(-1.6px,1.1px)}
   100%{transform:translate(0,0)}
 }
@@ -314,15 +323,15 @@ tr.viz .cell.on[data-v="beskar"]::before{animation:vTopo 26s linear infinite}
 }
 .cell.on[data-v="beskar"]:hover::after{opacity:.85;animation:vSweep 2.4s ease-in-out infinite}
 .cell.on[data-v="beskar"].just::after{opacity:.9;animation:vSweep 1s ease-out 1}
+@keyframes vSweep{0%{transform:translateX(-34%)}45%,100%{transform:translateX(34%)}}
 
-/* ---- GALACTIC: deep nebula with drifting starfield ---- */
+/* ---- GALACTIC: deep nebula, drifting starfield ---- */
 .cell.on[data-v="galactic"]{
   background:
     radial-gradient(circle at 28% 22%, rgba(206,88,255,.5), transparent 64%),
     radial-gradient(circle at 80% 78%, rgba(120,38,210,.45), transparent 58%),
     linear-gradient(150deg,#3d1266,#1a0630 62%,#120324);
-  border-color:#c05cf5;color:#f4e6ff;
-  box-shadow:0 0 11px rgba(176,76,247,.5);
+  --ring:#c05cf5;--glow:rgba(176,76,247,.5);color:#f4e6ff;
 }
 .cell.on[data-v="galactic"]::before{
   inset:-50%;
@@ -341,7 +350,7 @@ tr.viz .cell.on[data-v="galactic"]::before{animation:vStars 14s linear infinite}
 .cell.on[data-v="galactic"]:hover::after{opacity:1;animation:vFlare 2.6s ease-in-out infinite}
 @keyframes vFlare{0%,100%{opacity:.3}50%{opacity:1}}
 
-/* ---- STELLAR: gold cloudbank with a slowly turning star chart ---- */
+/* ---- STELLAR: drifting cloudbank, star chart off to one side ---- */
 .cell.stl.on{
   background:
     radial-gradient(circle at 70% 76%, rgba(112,66,6,.6), transparent 54%),
@@ -349,15 +358,38 @@ tr.viz .cell.on[data-v="galactic"]::before{animation:vStars 14s linear infinite}
     radial-gradient(circle at 80% 28%, rgba(255,238,180,.7), transparent 48%),
     radial-gradient(circle at 46% 58%, rgba(255,226,150,.45), transparent 46%),
     linear-gradient(147deg,#70460a,#c08a1c 38%,#dfad35 62%,#8a5c10 88%);
-  border-color:#e8b13a;color:#241704;
-  box-shadow:0 0 12px rgba(224,166,39,.55),inset 0 0 9px rgba(92,58,6,.55);
+  --ring:#e8b13a;--glow:rgba(224,166,39,.55);color:#241704;
 }
+/* ::before = the clouds themselves, slowly rolling */
 .cell.stl.on::before{
-  background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cg fill=%22none%22 stroke=%22%23fff4cf%22 stroke-width=%221.5%22 opacity=%22.95%22%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2214%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2224%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2234%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2246%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2258%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2270%22/%3E%3Cline x1=%2294.0%22 y1=%2280.0%22 x2=%22150.0%22 y2=%2280.0%22/%3E%3Cline x1=%2293.5%22 y1=%2283.6%22 x2=%22147.6%22 y2=%2298.1%22/%3E%3Cline x1=%2292.1%22 y1=%2287.0%22 x2=%22140.6%22 y2=%22115.0%22/%3E%3Cline x1=%2289.9%22 y1=%2289.9%22 x2=%22129.5%22 y2=%22129.5%22/%3E%3Cline x1=%2287.0%22 y1=%2292.1%22 x2=%22115.0%22 y2=%22140.6%22/%3E%3Cline x1=%2283.6%22 y1=%2293.5%22 x2=%2298.1%22 y2=%22147.6%22/%3E%3Cline x1=%2280.0%22 y1=%2294.0%22 x2=%2280.0%22 y2=%22150.0%22/%3E%3Cline x1=%2276.4%22 y1=%2293.5%22 x2=%2261.9%22 y2=%22147.6%22/%3E%3Cline x1=%2273.0%22 y1=%2292.1%22 x2=%2245.0%22 y2=%22140.6%22/%3E%3Cline x1=%2270.1%22 y1=%2289.9%22 x2=%2230.5%22 y2=%22129.5%22/%3E%3Cline x1=%2267.9%22 y1=%2287.0%22 x2=%2219.4%22 y2=%22115.0%22/%3E%3Cline x1=%2266.5%22 y1=%2283.6%22 x2=%2212.4%22 y2=%2298.1%22/%3E%3Cline x1=%2266.0%22 y1=%2280.0%22 x2=%2210.0%22 y2=%2280.0%22/%3E%3Cline x1=%2266.5%22 y1=%2276.4%22 x2=%2212.4%22 y2=%2261.9%22/%3E%3Cline x1=%2267.9%22 y1=%2273.0%22 x2=%2219.4%22 y2=%2245.0%22/%3E%3Cline x1=%2270.1%22 y1=%2270.1%22 x2=%2230.5%22 y2=%2230.5%22/%3E%3Cline x1=%2273.0%22 y1=%2267.9%22 x2=%2245.0%22 y2=%2219.4%22/%3E%3Cline x1=%2276.4%22 y1=%2266.5%22 x2=%2261.9%22 y2=%2212.4%22/%3E%3Cline x1=%2280.0%22 y1=%2266.0%22 x2=%2280.0%22 y2=%2210.0%22/%3E%3Cline x1=%2283.6%22 y1=%2266.5%22 x2=%2298.1%22 y2=%2212.4%22/%3E%3Cline x1=%2287.0%22 y1=%2267.9%22 x2=%22115.0%22 y2=%2219.4%22/%3E%3Cline x1=%2289.9%22 y1=%2270.1%22 x2=%22129.5%22 y2=%2230.5%22/%3E%3Cline x1=%2292.1%22 y1=%2273.0%22 x2=%22140.6%22 y2=%2245.0%22/%3E%3Cline x1=%2293.5%22 y1=%2276.4%22 x2=%22147.6%22 y2=%2261.9%22/%3E%3Cline x1=%22150.0%22 y1=%2280.0%22 x2=%22156.0%22 y2=%2280.0%22/%3E%3Cline x1=%22149.4%22 y1=%2289.1%22 x2=%22155.3%22 y2=%2289.9%22/%3E%3Cline x1=%22147.6%22 y1=%2298.1%22 x2=%22153.4%22 y2=%2299.7%22/%3E%3Cline x1=%22144.7%22 y1=%22106.8%22 x2=%22150.2%22 y2=%22109.1%22/%3E%3Cline x1=%22140.6%22 y1=%22115.0%22 x2=%22145.8%22 y2=%22118.0%22/%3E%3Cline x1=%22135.5%22 y1=%22122.6%22 x2=%22140.3%22 y2=%22126.3%22/%3E%3Cline x1=%22129.5%22 y1=%22129.5%22 x2=%22133.7%22 y2=%22133.7%22/%3E%3Cline x1=%22122.6%22 y1=%22135.5%22 x2=%22126.3%22 y2=%22140.3%22/%3E%3Cline x1=%22115.0%22 y1=%22140.6%22 x2=%22118.0%22 y2=%22145.8%22/%3E%3Cline x1=%22106.8%22 y1=%22144.7%22 x2=%22109.1%22 y2=%22150.2%22/%3E%3Cline x1=%2298.1%22 y1=%22147.6%22 x2=%2299.7%22 y2=%22153.4%22/%3E%3Cline x1=%2289.1%22 y1=%22149.4%22 x2=%2289.9%22 y2=%22155.3%22/%3E%3Cline x1=%2280.0%22 y1=%22150.0%22 x2=%2280.0%22 y2=%22156.0%22/%3E%3Cline x1=%2270.9%22 y1=%22149.4%22 x2=%2270.1%22 y2=%22155.3%22/%3E%3Cline x1=%2261.9%22 y1=%22147.6%22 x2=%2260.3%22 y2=%22153.4%22/%3E%3Cline x1=%2253.2%22 y1=%22144.7%22 x2=%2250.9%22 y2=%22150.2%22/%3E%3Cline x1=%2245.0%22 y1=%22140.6%22 x2=%2242.0%22 y2=%22145.8%22/%3E%3Cline x1=%2237.4%22 y1=%22135.5%22 x2=%2233.7%22 y2=%22140.3%22/%3E%3Cline x1=%2230.5%22 y1=%22129.5%22 x2=%2226.3%22 y2=%22133.7%22/%3E%3Cline x1=%2224.5%22 y1=%22122.6%22 x2=%2219.7%22 y2=%22126.3%22/%3E%3Cline x1=%2219.4%22 y1=%22115.0%22 x2=%2214.2%22 y2=%22118.0%22/%3E%3Cline x1=%2215.3%22 y1=%22106.8%22 x2=%229.8%22 y2=%22109.1%22/%3E%3Cline x1=%2212.4%22 y1=%2298.1%22 x2=%226.6%22 y2=%2299.7%22/%3E%3Cline x1=%2210.6%22 y1=%2289.1%22 x2=%224.7%22 y2=%2289.9%22/%3E%3Cline x1=%2210.0%22 y1=%2280.0%22 x2=%224.0%22 y2=%2280.0%22/%3E%3Cline x1=%2210.6%22 y1=%2270.9%22 x2=%224.7%22 y2=%2270.1%22/%3E%3Cline x1=%2212.4%22 y1=%2261.9%22 x2=%226.6%22 y2=%2260.3%22/%3E%3Cline x1=%2215.3%22 y1=%2253.2%22 x2=%229.8%22 y2=%2250.9%22/%3E%3Cline x1=%2219.4%22 y1=%2245.0%22 x2=%2214.2%22 y2=%2242.0%22/%3E%3Cline x1=%2224.5%22 y1=%2237.4%22 x2=%2219.7%22 y2=%2233.7%22/%3E%3Cline x1=%2230.5%22 y1=%2230.5%22 x2=%2226.3%22 y2=%2226.3%22/%3E%3Cline x1=%2237.4%22 y1=%2224.5%22 x2=%2233.7%22 y2=%2219.7%22/%3E%3Cline x1=%2245.0%22 y1=%2219.4%22 x2=%2242.0%22 y2=%2214.2%22/%3E%3Cline x1=%2253.2%22 y1=%2215.3%22 x2=%2250.9%22 y2=%229.8%22/%3E%3Cline x1=%2261.9%22 y1=%2212.4%22 x2=%2260.3%22 y2=%226.6%22/%3E%3Cline x1=%2270.9%22 y1=%2210.6%22 x2=%2270.1%22 y2=%224.7%22/%3E%3Cline x1=%2280.0%22 y1=%2210.0%22 x2=%2280.0%22 y2=%224.0%22/%3E%3Cline x1=%2289.1%22 y1=%2210.6%22 x2=%2289.9%22 y2=%224.7%22/%3E%3Cline x1=%2298.1%22 y1=%2212.4%22 x2=%2299.7%22 y2=%226.6%22/%3E%3Cline x1=%22106.8%22 y1=%2215.3%22 x2=%22109.1%22 y2=%229.8%22/%3E%3Cline x1=%22115.0%22 y1=%2219.4%22 x2=%22118.0%22 y2=%2214.2%22/%3E%3Cline x1=%22122.6%22 y1=%2224.5%22 x2=%22126.3%22 y2=%2219.7%22/%3E%3Cline x1=%22129.5%22 y1=%2230.5%22 x2=%22133.7%22 y2=%2226.3%22/%3E%3Cline x1=%22135.5%22 y1=%2237.4%22 x2=%22140.3%22 y2=%2233.7%22/%3E%3Cline x1=%22140.6%22 y1=%2245.0%22 x2=%22145.8%22 y2=%2242.0%22/%3E%3Cline x1=%22144.7%22 y1=%2253.2%22 x2=%22150.2%22 y2=%2250.9%22/%3E%3Cline x1=%22147.6%22 y1=%2261.9%22 x2=%22153.4%22 y2=%2260.3%22/%3E%3Cline x1=%22149.4%22 y1=%2270.9%22 x2=%22155.3%22 y2=%2270.1%22/%3E%3C/g%3E%3Cg fill=%22%23fffdf2%22 opacity=%22.95%22%3E%3Cg transform=%22translate(80,10)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(133,80)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(80,150)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(27,80)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(42,42)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(118,118)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") center/60% 60% no-repeat;
-  opacity:.58;
+  inset:-55%;
+  background:
+    radial-gradient(closest-side, rgba(255,252,236,.8), transparent 74%)
+      calc(14% + var(--ox,0px)) calc(24% + var(--oy,0px))/58% 50% no-repeat,
+    radial-gradient(closest-side, rgba(255,240,190,.62), transparent 74%)
+      calc(74% - var(--ox,0px)) calc(64% + var(--oy,0px))/62% 54% no-repeat,
+    radial-gradient(closest-side, rgba(146,92,12,.5), transparent 74%)
+      calc(42% + var(--oy,0px)) calc(86% - var(--ox,0px))/56% 46% no-repeat,
+    radial-gradient(closest-side, rgba(255,247,216,.55), transparent 74%)
+      calc(88% - var(--oy,0px)) calc(16% + var(--ox,0px))/46% 42% no-repeat;
+  opacity:.9;
 }
-tr.viz .cell.stl.on::before{animation:vSpin 48s linear infinite}
+tr.viz .cell.stl.on::before{animation:vClouds 24s ease-in-out infinite}
+@keyframes vClouds{
+  0%{transform:translate(0,0)}        25%{transform:translate(3.4px,-1.9px)}
+  50%{transform:translate(1.5px,2.8px)} 75%{transform:translate(-2.8px,1.3px)}
+  100%{transform:translate(0,0)}
+}
+/* <u> = the star chart, sitting off to the left and turning in place */
+.cell.stl.on>u{
+  position:absolute;left:var(--sx,-16%);top:var(--sy,10%);width:84%;height:84%;
+  z-index:1;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 160 160%22%3E%3Cg fill=%22none%22 stroke=%22%23fff4cf%22 stroke-width=%221.5%22 opacity=%22.95%22%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2214%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2224%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2234%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2246%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2258%22/%3E%3Ccircle cx=%2280%22 cy=%2280%22 r=%2270%22/%3E%3Cline x1=%2294.0%22 y1=%2280.0%22 x2=%22150.0%22 y2=%2280.0%22/%3E%3Cline x1=%2293.5%22 y1=%2283.6%22 x2=%22147.6%22 y2=%2298.1%22/%3E%3Cline x1=%2292.1%22 y1=%2287.0%22 x2=%22140.6%22 y2=%22115.0%22/%3E%3Cline x1=%2289.9%22 y1=%2289.9%22 x2=%22129.5%22 y2=%22129.5%22/%3E%3Cline x1=%2287.0%22 y1=%2292.1%22 x2=%22115.0%22 y2=%22140.6%22/%3E%3Cline x1=%2283.6%22 y1=%2293.5%22 x2=%2298.1%22 y2=%22147.6%22/%3E%3Cline x1=%2280.0%22 y1=%2294.0%22 x2=%2280.0%22 y2=%22150.0%22/%3E%3Cline x1=%2276.4%22 y1=%2293.5%22 x2=%2261.9%22 y2=%22147.6%22/%3E%3Cline x1=%2273.0%22 y1=%2292.1%22 x2=%2245.0%22 y2=%22140.6%22/%3E%3Cline x1=%2270.1%22 y1=%2289.9%22 x2=%2230.5%22 y2=%22129.5%22/%3E%3Cline x1=%2267.9%22 y1=%2287.0%22 x2=%2219.4%22 y2=%22115.0%22/%3E%3Cline x1=%2266.5%22 y1=%2283.6%22 x2=%2212.4%22 y2=%2298.1%22/%3E%3Cline x1=%2266.0%22 y1=%2280.0%22 x2=%2210.0%22 y2=%2280.0%22/%3E%3Cline x1=%2266.5%22 y1=%2276.4%22 x2=%2212.4%22 y2=%2261.9%22/%3E%3Cline x1=%2267.9%22 y1=%2273.0%22 x2=%2219.4%22 y2=%2245.0%22/%3E%3Cline x1=%2270.1%22 y1=%2270.1%22 x2=%2230.5%22 y2=%2230.5%22/%3E%3Cline x1=%2273.0%22 y1=%2267.9%22 x2=%2245.0%22 y2=%2219.4%22/%3E%3Cline x1=%2276.4%22 y1=%2266.5%22 x2=%2261.9%22 y2=%2212.4%22/%3E%3Cline x1=%2280.0%22 y1=%2266.0%22 x2=%2280.0%22 y2=%2210.0%22/%3E%3Cline x1=%2283.6%22 y1=%2266.5%22 x2=%2298.1%22 y2=%2212.4%22/%3E%3Cline x1=%2287.0%22 y1=%2267.9%22 x2=%22115.0%22 y2=%2219.4%22/%3E%3Cline x1=%2289.9%22 y1=%2270.1%22 x2=%22129.5%22 y2=%2230.5%22/%3E%3Cline x1=%2292.1%22 y1=%2273.0%22 x2=%22140.6%22 y2=%2245.0%22/%3E%3Cline x1=%2293.5%22 y1=%2276.4%22 x2=%22147.6%22 y2=%2261.9%22/%3E%3Cline x1=%22150.0%22 y1=%2280.0%22 x2=%22156.0%22 y2=%2280.0%22/%3E%3Cline x1=%22149.4%22 y1=%2289.1%22 x2=%22155.3%22 y2=%2289.9%22/%3E%3Cline x1=%22147.6%22 y1=%2298.1%22 x2=%22153.4%22 y2=%2299.7%22/%3E%3Cline x1=%22144.7%22 y1=%22106.8%22 x2=%22150.2%22 y2=%22109.1%22/%3E%3Cline x1=%22140.6%22 y1=%22115.0%22 x2=%22145.8%22 y2=%22118.0%22/%3E%3Cline x1=%22135.5%22 y1=%22122.6%22 x2=%22140.3%22 y2=%22126.3%22/%3E%3Cline x1=%22129.5%22 y1=%22129.5%22 x2=%22133.7%22 y2=%22133.7%22/%3E%3Cline x1=%22122.6%22 y1=%22135.5%22 x2=%22126.3%22 y2=%22140.3%22/%3E%3Cline x1=%22115.0%22 y1=%22140.6%22 x2=%22118.0%22 y2=%22145.8%22/%3E%3Cline x1=%22106.8%22 y1=%22144.7%22 x2=%22109.1%22 y2=%22150.2%22/%3E%3Cline x1=%2298.1%22 y1=%22147.6%22 x2=%2299.7%22 y2=%22153.4%22/%3E%3Cline x1=%2289.1%22 y1=%22149.4%22 x2=%2289.9%22 y2=%22155.3%22/%3E%3Cline x1=%2280.0%22 y1=%22150.0%22 x2=%2280.0%22 y2=%22156.0%22/%3E%3Cline x1=%2270.9%22 y1=%22149.4%22 x2=%2270.1%22 y2=%22155.3%22/%3E%3Cline x1=%2261.9%22 y1=%22147.6%22 x2=%2260.3%22 y2=%22153.4%22/%3E%3Cline x1=%2253.2%22 y1=%22144.7%22 x2=%2250.9%22 y2=%22150.2%22/%3E%3Cline x1=%2245.0%22 y1=%22140.6%22 x2=%2242.0%22 y2=%22145.8%22/%3E%3Cline x1=%2237.4%22 y1=%22135.5%22 x2=%2233.7%22 y2=%22140.3%22/%3E%3Cline x1=%2230.5%22 y1=%22129.5%22 x2=%2226.3%22 y2=%22133.7%22/%3E%3Cline x1=%2224.5%22 y1=%22122.6%22 x2=%2219.7%22 y2=%22126.3%22/%3E%3Cline x1=%2219.4%22 y1=%22115.0%22 x2=%2214.2%22 y2=%22118.0%22/%3E%3Cline x1=%2215.3%22 y1=%22106.8%22 x2=%229.8%22 y2=%22109.1%22/%3E%3Cline x1=%2212.4%22 y1=%2298.1%22 x2=%226.6%22 y2=%2299.7%22/%3E%3Cline x1=%2210.6%22 y1=%2289.1%22 x2=%224.7%22 y2=%2289.9%22/%3E%3Cline x1=%2210.0%22 y1=%2280.0%22 x2=%224.0%22 y2=%2280.0%22/%3E%3Cline x1=%2210.6%22 y1=%2270.9%22 x2=%224.7%22 y2=%2270.1%22/%3E%3Cline x1=%2212.4%22 y1=%2261.9%22 x2=%226.6%22 y2=%2260.3%22/%3E%3Cline x1=%2215.3%22 y1=%2253.2%22 x2=%229.8%22 y2=%2250.9%22/%3E%3Cline x1=%2219.4%22 y1=%2245.0%22 x2=%2214.2%22 y2=%2242.0%22/%3E%3Cline x1=%2224.5%22 y1=%2237.4%22 x2=%2219.7%22 y2=%2233.7%22/%3E%3Cline x1=%2230.5%22 y1=%2230.5%22 x2=%2226.3%22 y2=%2226.3%22/%3E%3Cline x1=%2237.4%22 y1=%2224.5%22 x2=%2233.7%22 y2=%2219.7%22/%3E%3Cline x1=%2245.0%22 y1=%2219.4%22 x2=%2242.0%22 y2=%2214.2%22/%3E%3Cline x1=%2253.2%22 y1=%2215.3%22 x2=%2250.9%22 y2=%229.8%22/%3E%3Cline x1=%2261.9%22 y1=%2212.4%22 x2=%2260.3%22 y2=%226.6%22/%3E%3Cline x1=%2270.9%22 y1=%2210.6%22 x2=%2270.1%22 y2=%224.7%22/%3E%3Cline x1=%2280.0%22 y1=%2210.0%22 x2=%2280.0%22 y2=%224.0%22/%3E%3Cline x1=%2289.1%22 y1=%2210.6%22 x2=%2289.9%22 y2=%224.7%22/%3E%3Cline x1=%2298.1%22 y1=%2212.4%22 x2=%2299.7%22 y2=%226.6%22/%3E%3Cline x1=%22106.8%22 y1=%2215.3%22 x2=%22109.1%22 y2=%229.8%22/%3E%3Cline x1=%22115.0%22 y1=%2219.4%22 x2=%22118.0%22 y2=%2214.2%22/%3E%3Cline x1=%22122.6%22 y1=%2224.5%22 x2=%22126.3%22 y2=%2219.7%22/%3E%3Cline x1=%22129.5%22 y1=%2230.5%22 x2=%22133.7%22 y2=%2226.3%22/%3E%3Cline x1=%22135.5%22 y1=%2237.4%22 x2=%22140.3%22 y2=%2233.7%22/%3E%3Cline x1=%22140.6%22 y1=%2245.0%22 x2=%22145.8%22 y2=%2242.0%22/%3E%3Cline x1=%22144.7%22 y1=%2253.2%22 x2=%22150.2%22 y2=%2250.9%22/%3E%3Cline x1=%22147.6%22 y1=%2261.9%22 x2=%22153.4%22 y2=%2260.3%22/%3E%3Cline x1=%22149.4%22 y1=%2270.9%22 x2=%22155.3%22 y2=%2270.1%22/%3E%3C/g%3E%3Cg fill=%22%23fffdf2%22 opacity=%22.95%22%3E%3Cg transform=%22translate(80,10)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(133,80)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(80,150)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(27,80)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(42,42)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3Cg transform=%22translate(118,118)%22%3E%3Cpath d=%22M0,-5 L1.2,-1.2 L5,0 L1.2,1.2 L0,5 L-1.2,1.2 L-5,0 L-1.2,-1.2 Z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;
+  opacity:.62;
+}
+tr.viz .cell.stl.on>u{animation:vSpin 30s linear infinite}
 @keyframes vSpin{to{transform:rotate(360deg)}}
+.cell.stl.on:hover>u{opacity:.82;animation-duration:11s}
 .cell.stl.on::after{
   background:
     radial-gradient(1.5px 1.5px at 26% 24%, #fffdf0, transparent 100%),
@@ -367,20 +399,28 @@ tr.viz .cell.stl.on::before{animation:vSpin 48s linear infinite}
     radial-gradient(circle at 72% 70%, rgba(255,240,196,.45), transparent 50%);
 }
 .cell.stl.on:hover::after{opacity:1;animation:vFlare 2.6s ease-in-out infinite}
-.cell.stl.on:hover::before{animation-duration:18s;opacity:.6}
 
-/* hover: brighter rim on everything animated */
+/* ---- per-tile variation: phase + pattern offset come from the droid id ---- */
+.cell.on::before,.cell.on::after,.cell.on>u{animation-delay:var(--ph,0s)}
+.cell.on[data-v="beskar"]::before{animation-delay:0s}   /* beskar stays uniform */
+.cell.on[data-v="diamond"]::before,
+.cell.rbw.on::before{
+  background-position:calc(50% + var(--ox,0px)) calc(50% + var(--oy,0px));
+}
+.cell.on[data-v="galactic"]::before{background-position:var(--ox,0px) var(--oy,0px)}
+
+/* hover: brighter rim on everything */
 @media (hover:hover){
-  tr.viz .cell.rbw.on:hover{animation-duration:2.4s;box-shadow:0 0 16px rgba(224,93,240,.85)}
-  .cell.on[data-v="beskar"]:hover{box-shadow:0 0 16px rgba(210,220,236,.7)}
-  .cell.on[data-v="galactic"]:hover{box-shadow:0 0 18px rgba(186,86,255,.85)}
-  .cell.stl.on:hover{box-shadow:0 0 18px rgba(240,186,60,.9),inset 0 0 9px rgba(92,58,6,.55)}
-  .cell.on[data-v="gold"]:hover{box-shadow:0 0 16px rgba(245,200,70,.8)}
-  .cell.on[data-v="diamond"]:hover{box-shadow:0 0 16px rgba(70,220,250,.8)}
+  .cell.on[data-v="gold"]:hover{--gs:16px;--glow:rgba(245,200,70,.8)}
+  .cell.on[data-v="diamond"]:hover{--gs:17px;--glow:rgba(70,220,250,.85)}
+  .cell.rbw.on:hover{--gs:18px;--glow:rgba(224,93,240,.9)}
+  .cell.on[data-v="beskar"]:hover{--gs:16px;--glow:rgba(210,220,236,.7)}
+  .cell.on[data-v="galactic"]:hover{--gs:18px;--glow:rgba(186,86,255,.85)}
+  .cell.stl.on:hover{--gs:18px;--glow:rgba(240,186,60,.9)}
   tr.viz .cell.on[data-v="galactic"]:hover::before{animation-duration:4.5s}
 }
 @media (prefers-reduced-motion:reduce){
-  .cell,.cell::before,.cell::after,.chip,.chip::before{animation:none!important}
+  .cell,.cell::before,.cell::after,.cell>u,.chip,.chip::before{animation:none!important}
 }
 
 
@@ -394,9 +434,6 @@ td.vc:has(.cell.stl.on)::before{
     rgba(255,226,150,.42) 0%, rgba(240,182,60,.2) 44%, rgba(200,140,30,.08) 64%, transparent 76%);
   filter:blur(3.5px);
 }
-tr.viz td.vc:has(.cell.stl.on)::before{animation:vFog 9s ease-in-out infinite}
-@keyframes vFog{0%,100%{opacity:.75;transform:translate(-50%,-50%) scale(1)}
-                50%{opacity:1;transform:translate(-50%,-50%) scale(1.09)}}
 .cell{z-index:1}
 @media(max-width:600px){ td.vc:has(.cell.stl.on)::before{width:48px;height:48px} }
 
@@ -411,7 +448,7 @@ tr.fl td.vc::after{
   tr.fl td.vc::after{left:calc(50% + 7px);top:-3px}
 }
 .fcell{--vt:#ffffff;border-radius:50%}
-.fcell.on{background:#fff;color:#141822;border-color:#fff;box-shadow:0 0 11px rgba(255,255,255,.6)}
+.fcell.on{background:#fff;color:#141822;--ring:#fff;--glow:rgba(255,255,255,.62);--gs:11px}
 td.na{color:var(--ink-soft);opacity:.35;font-family:'Barlow Condensed',sans-serif;font-size:13px}
 
 /* quick-fill */
@@ -687,6 +724,21 @@ function setOn(id,v,on){
   if(on) state.c[id][v]=1; else delete state.c[id][v];
 }
 
+
+/* Per-tile variation. Derived from the droid id + variant so it is stable
+   across reloads, but different for every tile — otherwise a whole column
+   animates in lockstep. */
+function hsh(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function tileVars(id,v){
+  const H=hsh(id+'|'+v);
+  const ph=-((H%150)/10).toFixed(1);          /* 0 to -15s phase offset   */
+  const ox=((H>>>7)%23)-11;                   /* -11..11px pattern offset */
+  const oy=((H>>>13)%23)-11;
+  const sx=-34+((H>>>3)%46);                  /* star-chart spot, stellar */
+  const sy=-12+((H>>>11)%32);
+  return `--ph:${ph}s;--ox:${ox}px;--oy:${oy}px;--sx:${sx}%;--sy:${sy}%;`;
+}
+
 /* ---------------- build ---------------- */
 const secHost=document.getElementById('sections');
 const order=['common','rare','epic','legendary','mythic','iconic'];
@@ -723,7 +775,7 @@ for(const r of order){
     let tds=`<td class="name"><span class="nm">${d.name}</span>${d.cls?(d.cls==='Protocol'?`<span class="cls proto"><svg class="pico" viewBox="0 0 24 26" aria-hidden="true"><path d="M12 1l9.5 5.5v13L12 25 2.5 19.5v-13z" fill="currentColor"/><rect x="8.6" y="8.2" width="6.8" height="10" rx="1.4" fill="#2a1d05"/><rect x="10" y="10" width="4" height="2.8" rx=".6" fill="currentColor"/><rect x="10" y="14.2" width="4" height="1.5" rx=".5" fill="currentColor"/></svg>Protocol</span>`:`<span class="cls">${d.cls}</span>`):''}${d.fuse?`<button class="fusetag" data-id="${d.id}" aria-expanded="false" title="Show fusion recipe"><img class="fico" src="data:image/png;base64,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" alt="">Fusion <span class="car">▾</span></button>`:''}</td>`;
     for(const v of VARIANTS){
       if(r==='iconic'&&v.key!=='default'){ tds+=`<td class="na">—</td>`; continue; }
-      tds+=`<td class="vc"><button class="cell ${v.rbw?'rbw':''}${v.stl?'stl':''}" data-id="${d.id}" data-v="${v.key}" style="--vt:${v.tone}" role="switch" aria-checked="false" aria-label="${d.name} ${v.label}"><i>✓</i></button></td>`;
+      tds+=`<td class="vc"><button class="cell ${v.rbw?'rbw':''}${v.stl?'stl':''}" data-id="${d.id}" data-v="${v.key}" style="--vt:${v.tone};${tileVars(d.id,v.key)}" role="switch" aria-checked="false" aria-label="${d.name} ${v.label}">${v.stl?'<u></u>':''}<i>✓</i></button></td>`;
     }
     tds += r==='iconic' ? `<td class="na">—</td>`
       : `<td><button class="fcell" data-id="${d.id}" role="switch" aria-checked="false" aria-label="${d.name} Flawless"><i>✦</i></button></td>`;
